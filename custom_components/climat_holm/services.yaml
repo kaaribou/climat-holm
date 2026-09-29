@@ -1,0 +1,55 @@
+boost:
+  fields:
+    entity_id:
+      selector:
+        entity:
+          integration: climat_holm
+          domain: climate
+          multiple: true
+    room:
+      selector:
+        text:
+    minutes:
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 720
+          unit_of_measurement: min
+next_slot:
+  fields:
+    entity_id:
+      selector:
+        entity:
+          integration: climat_holm
+          domain: climate
+          multiple: true
+    room:
+      selector:
+        text:
+cancel_override:
+  fields:
+    entity_id:
+      selector:
+        entity:
+          integration: climat_holm
+          domain: climate
+          multiple: true
+    room:
+      selector:
+        text:
+set_profile:
+  fields:
+    profile:
+      required: true
+      selector:
+        text:
+set_away:
+  fields:
+    away:
+      default: true
+      selector:
+        boolean:
+    until:
+      selector:
+        datetime:

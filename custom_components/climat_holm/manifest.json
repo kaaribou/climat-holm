@@ -1,0 +1,14 @@
+{
+  "domain": "climat_holm",
+  "name": "Climat HOLM",
+  "codeowners": ["@kaaribou"],
+  "config_flow": true,
+  "dependencies": ["http", "frontend", "websocket_api"],
+  "after_dependencies": ["lovelace"],
+  "documentation": "https://github.com/kaaribou/climat-holm",
+  "integration_type": "hub",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/kaaribou/climat-holm/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

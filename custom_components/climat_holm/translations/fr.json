@@ -1,0 +1,48 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Programmation moderne du chauffage et de la climatisation, pièce par pièce. Tout se règle ensuite dans la carte HOLM Climat.",
+        "data": {
+          "import_cs": "Importer mes plannings depuis Climate Scheduler",
+          "climates": "Appareils à ajouter (une pièce par appareil)",
+          "start_running": "Activer la programmation tout de suite"
+        },
+        "data_description": {
+          "import_cs": "Une pièce est créée pour chaque groupe Climate Scheduler, avec son planning. Pensez à laisser ces plannings désactivés dans Climate Scheduler.",
+          "climates": "Vous pourrez ajouter, regrouper ou renommer les pièces depuis la carte.",
+          "start_running": "Laissé décoché, Climat HOLM ne touche à rien tant que vous n'activez pas la programmation dans la carte."
+        }
+      }
+    },
+    "abort": { "already_configured": "Climat HOLM est déjà configuré." }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Réglages Climat HOLM",
+        "data": {
+          "boost_temp": "Température du boost",
+          "boost_minutes": "Durée du boost",
+          "away_temp": "Température en absence",
+          "cool_away_off": "Arrêter la clim pendant l'absence",
+          "manual_temp": "Température du mode manuel (par défaut)",
+          "window_delay": "Délai avant arrêt si une fenêtre est ouverte"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": { "room": { "name": "Pièce" } },
+    "select": { "profile": { "name": "Profil" }, "season": { "name": "Saison" } },
+    "switch": { "running": { "name": "Programmation" }, "away": { "name": "Absence" }, "all_off": { "name": "Tout arrêter" } }
+  },
+  "services": {
+    "boost": { "name": "Boost", "description": "Chauffe (ou refroidit) une pièce pendant un temps donné.", "fields": { "entity_id": { "name": "Pièce", "description": "Thermostat Climat HOLM de la pièce." }, "room": { "name": "Nom de la pièce", "description": "Alternative à l'entité." }, "minutes": { "name": "Durée", "description": "En minutes (0 = annuler)." } } },
+    "next_slot": { "name": "Passer au créneau suivant", "description": "Applique tout de suite le prochain créneau du planning.", "fields": { "entity_id": { "name": "Pièce", "description": "Thermostat Climat HOLM de la pièce." }, "room": { "name": "Nom de la pièce", "description": "Alternative à l'entité." } } },
+    "cancel_override": { "name": "Revenir au planning", "description": "Annule dérogation et boost.", "fields": { "entity_id": { "name": "Pièce", "description": "Thermostat Climat HOLM de la pièce." }, "room": { "name": "Nom de la pièce", "description": "Alternative à l'entité." } } },
+    "set_profile": { "name": "Changer de profil", "description": "Active un profil (Normal, Vacances…).", "fields": { "profile": { "name": "Profil", "description": "Nom du profil." } } },
+    "set_away": { "name": "Absence", "description": "Active ou désactive le mode absence.", "fields": { "away": { "name": "Absent", "description": "Activer ou non." }, "until": { "name": "Jusqu'au", "description": "Date et heure de retour (facultatif)." } } }
+  }
+}
