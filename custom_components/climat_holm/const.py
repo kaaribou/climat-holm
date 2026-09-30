@@ -5,7 +5,7 @@ from typing import Final
 
 DOMAIN: Final = "climat_holm"
 NAME: Final = "Climat HOLM"
-VERSION: Final = "1.0.0"
+VERSION: Final = "1.1.1"
 
 CARD_FILENAME: Final = "holm-climat-card.js"
 CARD_URL_PATH: Final = "/climat_holm/holm-climat-card.js"

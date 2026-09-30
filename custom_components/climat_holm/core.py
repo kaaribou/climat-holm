@@ -1,6 +1,8 @@
 """Climat HOLM : mise en place de l'intégration (services, WebSocket, carte)."""
 from __future__ import annotations
 
+import hashlib
+
 import copy
 import logging
 from datetime import timedelta
@@ -110,6 +112,13 @@ async def _reload(hass: HomeAssistant) -> None:
 
 
 # ------------------------------------------------------------------ carte
+def _card_digest() -> str:
+    try:
+        return hashlib.sha1((Path(__file__).parent / "www" / CARD_FILENAME).read_bytes()).hexdigest()[:8]
+    except OSError:
+        return "0"
+
+
 async def _register_card(hass: HomeAssistant, _now=None) -> None:
     if not hass.data.get(_CARD_KEY):
         await hass.http.async_register_static_paths(
@@ -124,7 +133,10 @@ async def _register_card(hass: HomeAssistant, _now=None) -> None:
 
         async_call_later(hass, 5, _retry)
         return
-    url = f"{CARD_URL_PATH}?v={VERSION}"
+    # version + empreinte du fichier : toute modification de la carte change l'URL,
+    # ce qui force les navigateurs à recharger (le fichier est servi avec un long cache)
+    digest = await hass.async_add_executor_job(_card_digest)
+    url = f"{CARD_URL_PATH}?v={VERSION}-{digest}"
     if not hasattr(resources, "async_create_item"):
         add_extra_js_url(hass, url)
         return

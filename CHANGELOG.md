@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1
+- **Mise à jour de la carte toujours prise en compte** : l'adresse de la ressource Lovelace utilisait un numéro de version resté à 1.0.0, donc un navigateur pouvait continuer d'afficher l'ancienne carte depuis son cache après une mise à jour. Elle contient maintenant la version de l'intégration et une empreinte du fichier de la carte : toute nouvelle version change l'adresse et force le rechargement.
+
 ## 1.1.0
 Éditeur de journée plus précis ([#1](https://github.com/kaaribou/climat-holm/issues/1)).
 
