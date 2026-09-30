@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+Éditeur de journée plus précis ([#1](https://github.com/kaaribou/climat-holm/issues/1)).
+
+- **Réglage de la fin** d'une plage (− / +), à côté du début. Sur la dernière plage de la journée, « − » ajoute un arrêt avant minuit.
+- **Glissement fluide** des poignées au pas de 5 minutes (le suivi ne se perd plus pendant le glissement) ; les boutons − / + restent calés sur le quart d'heure.
+- **Options visibles dans la frise** : chaque plage affiche mode, consigne et options (« Ventil. · Vitesse 1 · Balayage »), avec le texte complet au survol.
+- **Petits créneaux accessibles** : flèches ‹ › « Créneau 2 / 5 » dans le panneau, flèches ← → du clavier, bouton « Parcourir les créneaux », et un toucher sur une poignée sélectionne son créneau. Poignées plus fines pour laisser la place aux plages courtes.
+
 ## 1.0.0
 Première version.
 

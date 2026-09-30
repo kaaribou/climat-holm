@@ -13,7 +13,7 @@ Climat HOLM est une intégration **Home Assistant** qui pilote vos radiateurs, p
 ### En bref
 
 - 👀 **Voir d'un coup d'œil** : une tuile par pièce avec la température actuelle, la consigne, ce qui se passe (« 20,5° · puis 17,5° à 22:30 »), la frise du jour et une animation quand ça chauffe ou refroidit.
-- ✍️ **Modifier facilement** : une frise de 0 h à 24 h par jour ; on fait glisser les poignées (au quart d'heure), on touche une plage pour régler sa température, on copie une journée vers d'autres jours ou d'autres pièces.
+- ✍️ **Modifier facilement** : une frise de 0 h à 24 h par jour ; on fait glisser les poignées (pas de 5 min), on règle début et fin au quart d'heure, on touche une plage pour régler sa température, on copie une journée vers d'autres jours ou d'autres pièces.
 - ❄️ **Chauffage et clim** : un interrupteur de saison Chauffage / Clim, et chaque créneau peut imposer son **mode** (chauffe, clim, chaud/froid, déshumidification, ventilation seule).
 - 🌀 **Options des appareils** : ventilation (auto, silencieux, vitesses), oscillation verticale et horizontale, préréglage (éco, confort, boost…), par pièce ou par créneau. La carte ne propose que ce que vos appareils savent faire.
 - ⚡ **Actions rapides** : Boost, Créneau suivant, Revenir au planning, mode Auto / Manuel / Arrêt, et pour toute la maison : Absence et Tout arrêter.
@@ -103,13 +103,14 @@ type: custom:holm-climat-card
 
 ### Une journée
 
-- Faites **glisser les poignées** pour changer les horaires (pas de 15 min).
-- **Touchez une plage** pour régler son heure de début, sa température ou l'arrêt, son **mode** et ses **options** : préréglage, ventilation, oscillation verticale et horizontale. « Par défaut » reprend le réglage de la pièce.
+- Faites **glisser les poignées** pour changer les horaires (pas de 5 min), ou réglez **Début** et **Fin** avec − / + (au quart d'heure).
+- Passez d'un créneau à l'autre avec les flèches ‹ › du panneau (ou ← → au clavier), pratique pour les petits créneaux. Un toucher sur une poignée sélectionne aussi son créneau.
+- **Touchez une plage** pour régler son heure de début et de fin, sa température ou l'arrêt, son **mode** et ses **options** : préréglage, ventilation, oscillation verticale et horizontale. « Par défaut » reprend le réglage de la pièce.
 - **Ajouter un créneau** coupe la plage choisie (ou la plus longue) en deux.
 - **Copier ce jour vers** d'autres jours (Lun → Ven, Week-end, Tous) et **Appliquer aussi la semaine à** d'autres pièces.
 - **Enregistrer** : rien n'est envoyé tant que vous n'avez pas enregistré.
 
-Sur les frises, la couleur suit la température (bleu → ambre → rouge en chauffage) et le mode : bleu pour la clim, cyan pour la déshumidification, vert pour la ventilation, hachures pour l'arrêt.
+Chaque plage affiche son mode, sa consigne et ses options (ex. « Ventil. · Vitesse 1 · Balayage »). Sur les frises, la couleur suit la température (bleu → ambre → rouge en chauffage) et le mode : bleu pour la clim, cyan pour la déshumidification, vert pour la ventilation, hachures pour l'arrêt.
 
 ### Options de la carte
 

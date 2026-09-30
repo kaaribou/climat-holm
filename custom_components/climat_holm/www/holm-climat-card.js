@@ -7,11 +7,13 @@
  * Tout se règle à la souris ou au doigt, sans YAML.
  */
 (() => {
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   const DAY_S = { mon: "Lun", tue: "Mar", wed: "Mer", thu: "Jeu", fri: "Ven", sat: "Sam", sun: "Dim" };
   const DAY_L = { mon: "Lundi", tue: "Mardi", wed: "Mercredi", thu: "Jeudi", fri: "Vendredi", sat: "Samedi", sun: "Dimanche" };
-  const SNAP = 15;
+  const SNAP = 15;   // pas des boutons −/+
+  const DRAG = 5;    // pas du glissement des poignées
+  const GAP = 5;     // écart minimal entre deux créneaux
 
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const mins = (t) => { const [h, m] = String(t).split(":").map(Number); return h * 60 + m; };
@@ -90,10 +92,10 @@
     let start = 0, cur = carry, idx = -1;
     slots.forEach((s, i) => {
       const m = mins(s.t);
-      if (m > start) out.push({ from: start, to: m, off: !slotOn(cur), temp: slotOn(cur) ? cur.temp : null, hvac: slotOn(cur) ? cur.hvac : null, idx });
+      if (m > start) out.push({ from: start, to: m, off: !slotOn(cur), temp: slotOn(cur) ? cur.temp : null, hvac: slotOn(cur) ? cur.hvac : null, o: slotOn(cur) ? cur : null, idx });
       start = m; cur = s; idx = i;
     });
-    out.push({ from: start, to: 1440, off: !slotOn(cur), temp: slotOn(cur) ? cur.temp : null, hvac: slotOn(cur) ? cur.hvac : null, idx });
+    out.push({ from: start, to: 1440, off: !slotOn(cur), temp: slotOn(cur) ? cur.temp : null, hvac: slotOn(cur) ? cur.hvac : null, o: slotOn(cur) ? cur : null, idx });
     return out.filter((s) => s.to > s.from);
   };
 
@@ -104,7 +106,8 @@
       const c = s.off ? "" : modeColor(s.hvac, s.temp, cool);
       const w = ((s.to - s.from) / 1440) * 100;
       const sel = opts.sel === s.idx && s.idx >= 0 ? " sel" : "";
-      return `<span class="seg${s.off ? " off" : ""}${sel}" data-idx="${s.idx}" style="left:${(s.from / 1440) * 100}%;width:${w}%;${c ? `--sc:${c}` : ""};--d:${i * 40}ms">${opts.big && w > 7 ? `<b>${s.off ? "Arrêt" : s.hvac === "fan_only" ? "Ventil." : (s.hvac && HVAC[s.hvac] && s.hvac !== (cool ? "cool" : "heat") && w > 12 ? HVAC[s.hvac].s + " " : "") + fmtT(s.temp) + "°"}</b>` : ""}</span>`;
+      const txt = opts.big ? (opts.label ? opts.label(s) : s.off ? "Arrêt" : s.hvac === "fan_only" ? "Ventil." : fmtT(s.temp) + "°") : "";
+      return `<span class="seg${s.off ? " off" : ""}${sel}" data-idx="${s.idx}"${txt ? ` title="${esc(txt)}"` : ""} style="left:${(s.from / 1440) * 100}%;width:${w}%;${c ? `--sc:${c}` : ""};--d:${i * 40}ms">${opts.big && w > 2.5 ? `<b>${esc(txt)}</b>` : ""}</span>`;
     }).join("")}${now != null ? `<i class="now" style="left:${(now / 1440) * 100}%"></i>` : ""}</div>`;
   };
 
@@ -129,11 +132,23 @@
       if (hass && hass.connection !== this._conn) { this._conn = hass.connection; this._unsub && this._unsub(); this._unsub = null; this._subscribe(); }
     }
     connectedCallback() {
+      if (!this._keyH) {
+        this._keyH = (ev) => {
+          if (this._view.name !== "day" || !this._edit || !this.isConnected) return;
+          if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+          const t = ev.composedPath()[0];
+          if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName || "")) return;
+          ev.preventDefault();
+          this._slotNav(ev.key === "ArrowRight" ? 1 : -1);
+        };
+      }
+      window.addEventListener("keydown", this._keyH);
       this._clock = setInterval(() => this._view.name === "home" && this._data && this._render(), 60000);
       if (this._hass && !this._unsub) this._subscribe();
     }
     disconnectedCallback() {
       clearInterval(this._clock);
+      if (this._keyH) window.removeEventListener("keydown", this._keyH);
       if (this._unsub) { this._unsub(); this._unsub = null; }
     }
     async _subscribe() {
@@ -393,14 +408,16 @@
       return `
         <div class="nav"><button class="ibtn" data-a="back-room"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${DAY_L[day]}<small>${esc(room.name)} · ${esc(g.profile)}</small></b><button class="pbtn sm${e.dirty ? "" : " ghost"}" data-a="save">Enregistrer</button></div>
         <div class="daynav">${DAYS.map((d) => `<button class="dn${d === day ? " on" : ""}${JSON.stringify(e.week[d]) !== JSON.stringify(e.orig[d]) ? " mod" : ""}" data-a="goday" data-day="${d}">${DAY_S[d]}</button>`).join("")}</div>
-        <div class="dbar" id="dbar">${barHTML(e.week, day, cool, { big: true, sel })}${slots.map((sl, i) => `<span class="handle${i === sel ? " on" : ""}" data-h="${i}" style="left:${(mins(sl.t) / 1440) * 100}%"><i></i><em>${sl.t}</em></span>`).join("")}</div>
+        <div class="dbar" id="dbar">${barHTML(e.week, day, cool, { big: true, sel, label: (sg) => this._segLabel(sg, caps, cool) })}${slots.map((sl, i) => `<span class="handle${i === sel ? " on" : ""}" data-h="${i}" style="left:${(mins(sl.t) / 1440) * 100}%"><i></i><em>${sl.t}</em></span>`).join("")}</div>
         <div class="hours big"><span>0h</span><span>3h</span><span>6h</span><span>9h</span><span>12h</span><span>15h</span><span>18h</span><span>21h</span><span>24h</span></div>
         ${s ? `<div class="slot">
+          <div class="snav"><button class="rbtn sm" data-a="sprev"${sel > 0 ? "" : " disabled"} title="Créneau précédent (←)"><ha-icon icon="mdi:chevron-left"></ha-icon></button><span>Créneau ${sel + 1} / ${slots.length}<small>${esc(this._segLabel({ off: !!s.off, hvac: s.hvac, temp: s.temp, o: s.off ? null : s }, caps, cool))}</small></span><button class="rbtn sm" data-a="snext"${sel < slots.length - 1 ? "" : " disabled"} title="Créneau suivant (→)"><ha-icon icon="mdi:chevron-right"></ha-icon></button></div>
           <div class="sf"><small>Début</small><div class="pm"><button class="rbtn sm" data-a="st-" ><ha-icon icon="mdi:minus"></ha-icon></button><span>${s.t}</span><button class="rbtn sm" data-a="st+"><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
+          <div class="sf"><small>Fin</small><div class="pm"><button class="rbtn sm" data-a="en-"${sel === slots.length - 1 && s.off ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span>${sel < slots.length - 1 ? slots[sel + 1].t : "24:00"}</span><button class="rbtn sm" data-a="en+"${sel < slots.length - 1 ? "" : " disabled"}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
           <div class="sf"><small>${s.off ? "Arrêt" : sNoT ? "Sans consigne" : "Température"}</small><div class="pm"><button class="rbtn sm" data-a="sv-"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span style="color:${s.off || sNoT ? "inherit" : modeColor(s.hvac, s.temp, cool)}">${s.off || sNoT ? "—" : fmtT(s.temp) + "°"}</span><button class="rbtn sm" data-a="sv+"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
           ${!s.off ? `<div class="sopts">${this._modePicker(caps, s.hvac || null, "shvac")}${this._optPicker(caps, s, "sopt")}</div>` : ""}
           <div class="sa"><button class="act${s.off ? " on" : ""}" data-a="soff"><ha-icon icon="mdi:power"></ha-icon>${s.off ? "Rallumer" : "Arrêt"}</button><button class="act danger" data-a="sdel"><ha-icon icon="mdi:delete-outline"></ha-icon>Supprimer</button></div>
-        </div>` : `<div class="hint"><ha-icon icon="mdi:gesture-tap"></ha-icon>Touchez une plage de la frise pour la régler, ou faites glisser les poignées pour changer les horaires.</div>`}
+        </div>` : `<div class="hint"><ha-icon icon="mdi:gesture-tap"></ha-icon>Touchez une plage de la frise pour la régler, ou faites glisser les poignées pour changer les horaires.${slots.length ? `<button class="pchip" data-a="sfirst">Parcourir les créneaux</button>` : ""}</div>`}
         <button class="add" data-a="sadd"><ha-icon icon="mdi:plus"></ha-icon>Ajouter un créneau</button>
         <div class="sec"><ha-icon icon="mdi:content-copy"></ha-icon>Copier ce jour vers</div>
         <div class="copy">${DAYS.filter((d) => d !== day).map((d) => `<button class="pchip" data-a="copyday" data-day="${d}">${DAY_S[d]}</button>`).join("")}<button class="pchip" data-a="copyset" data-v="week">Lun → Ven</button><button class="pchip" data-a="copyset" data-v="weekend">Week-end</button><button class="pchip" data-a="copyset" data-v="all">Tous</button></div>
@@ -414,19 +431,24 @@
           ev.preventDefault(); ev.stopPropagation();
           const i = Number(h.dataset.h), day = this._view.day, slots = this._edit.week[day];
           const rect = bar.getBoundingClientRect();
-          h.setPointerCapture(ev.pointerId);
+          const wasSel = this._edit.sel === i;
           this._edit.sel = i;
+          const x0 = ev.clientX;
+          let moved = false;
           const move = (e2) => {
-            let m = Math.round((((e2.clientX - rect.left) / rect.width) * 1440) / SNAP) * SNAP;
-            const lo = i > 0 ? mins(slots[i - 1].t) + SNAP : 0;
-            const hi = i < slots.length - 1 ? mins(slots[i + 1].t) - SNAP : 1440 - SNAP;
+            if (!moved && Math.abs(e2.clientX - x0) < 3) return;
+            moved = true;
+            let m = Math.round((((e2.clientX - rect.left) / rect.width) * 1440) / DRAG) * DRAG;
+            const lo = i > 0 ? mins(slots[i - 1].t) + GAP : 0;
+            const hi = i < slots.length - 1 ? mins(slots[i + 1].t) - GAP : 1440 - GAP;
             m = Math.max(lo, Math.min(hi, m));
             if (hhmm(m) !== slots[i].t) { slots[i].t = hhmm(m); this._edit.dirty = true; this._render(); }
           };
-          const up = () => { h.removeEventListener("pointermove", move); h.removeEventListener("pointerup", up); haptic(); };
-          h.addEventListener("pointermove", move);
-          h.addEventListener("pointerup", up);
-          h.addEventListener("pointercancel", up);
+          // suivi sur la fenêtre : la frise est redessinée pendant le glissement, la poignée d'origine disparaît
+          const up = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); haptic(); if (!moved && !wasSel) this._render(); };
+          window.addEventListener("pointermove", move);
+          window.addEventListener("pointerup", up);
+          window.addEventListener("pointercancel", up);
         });
       });
     }
@@ -553,7 +575,10 @@
         }
         // journée
         case "goday": this._view.day = b.dataset.day; this._edit.sel = null; return this._render();
-        case "st-": case "st+": case "sv-": case "sv+": case "soff": case "sdel": return this._slotEdit(a);
+        case "st-": case "st+": case "en-": case "en+": case "sv-": case "sv+": case "soff": case "sdel": return this._slotEdit(a);
+        case "sprev": return this._slotNav(-1);
+        case "snext": return this._slotNav(1);
+        case "sfirst": return this._slotNav(1);
         case "shvac": case "sopt": return this._slotEdit(a, b.dataset.k, b.dataset.v);
         case "mhvac": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "manual_opts", hvac: b.dataset.v || null });
         case "mopt": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "manual_opts", opts: { ...(room.manual_opts || {}), [b.dataset.k]: b.dataset.v || null } });
@@ -598,11 +623,26 @@
       const e = this._edit, slots = e.week[this._view.day], i = e.sel;
       if (i == null || !slots[i]) return;
       const s = slots[i];
+      const step = (m, up) => (up ? Math.floor(m / SNAP) * SNAP + SNAP : Math.ceil(m / SNAP) * SNAP - SNAP); // cale sur le quart d'heure
       if (a === "st-" || a === "st+") {
-        const m = mins(s.t) + (a === "st+" ? SNAP : -SNAP);
-        const lo = i > 0 ? mins(slots[i - 1].t) + SNAP : 0, hi = i < slots.length - 1 ? mins(slots[i + 1].t) - SNAP : 1440 - SNAP;
-        if (m < lo || m > hi) return;
+        const lo = i > 0 ? mins(slots[i - 1].t) + GAP : 0, hi = i < slots.length - 1 ? mins(slots[i + 1].t) - GAP : 1440 - GAP;
+        const m = Math.max(lo, Math.min(hi, step(mins(s.t), a === "st+")));
+        if (hhmm(m) === s.t) return;
         s.t = hhmm(m);
+      } else if (a === "en-" || a === "en+") {
+        const nx = slots[i + 1];
+        if (!nx) {
+          // dernier créneau de la journée : « − » ajoute un arrêt avant minuit
+          if (a === "en+" || s.off) return;
+          const m = step(1440, false);
+          if (m - mins(s.t) < GAP) return;
+          slots.push({ t: hhmm(m), off: true });
+        } else {
+          const lo = mins(s.t) + GAP, hi = slots[i + 2] ? mins(slots[i + 2].t) - GAP : 1440 - GAP;
+          const m = Math.max(lo, Math.min(hi, step(mins(nx.t), a === "en+")));
+          if (hhmm(m) === nx.t) return;
+          nx.t = hhmm(m);
+        }
       } else if (a === "sv-" || a === "sv+") {
         s.temp = Math.max(5, Math.min(30, Math.round(((s.temp ?? 19) + (a === "sv+" ? 0.5 : -0.5)) * 2) / 2));
       } else if (a === "shvac") {
@@ -620,6 +660,23 @@
       }
       e.dirty = true;
       this._render();
+    }
+    _slotNav(d) {
+      const e = this._edit, slots = e.week[this._view.day] || [];
+      if (!slots.length) return;
+      const i = e.sel == null ? (d > 0 ? 0 : slots.length - 1) : Math.max(0, Math.min(slots.length - 1, e.sel + d));
+      if (i === e.sel) return;
+      e.sel = i;
+      haptic();
+      this._render();
+    }
+    // libellé d'une plage dans la frise : mode, consigne et options (« Ventil. · Vitesse 1 · Balayage »)
+    _segLabel(sg, caps, cool) {
+      if (sg.off) return "Arrêt";
+      const hv = sg.hvac;
+      let base = hv === "fan_only" ? "Ventil." : (hv && HVAC[hv] && hv !== (cool ? "cool" : "heat") ? HVAC[hv].s + " " : "") + (sg.temp != null ? fmtT(sg.temp) + "°" : "");
+      const extra = sg.o ? OPTS.filter((o) => sg.o[o.k]).map((o) => this._vl(caps, o.k, sg.o[o.k])) : [];
+      return [base.trim(), ...extra].filter(Boolean).join(" · ");
     }
     _slotAdd() {
       const e = this._edit, day = this._view.day, slots = e.week[day];
@@ -740,7 +797,7 @@
       .bar.big { height: 54px; border-radius: 14px; overflow: visible; }
       .bar.big .seg { display: grid; place-items: center; border-right: 1px solid rgba(0,0,0,.18); cursor: pointer; transition: filter .2s, box-shadow .2s; }
       .bar.big .seg:first-child { border-radius: 14px 0 0 14px; } .bar.big .seg:last-child { border-radius: 0 14px 14px 0; border-right: 0; }
-      .bar.big .seg b { font-size: 11.5px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.45); white-space: nowrap; }
+      .bar.big .seg b { font-size: 11.5px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; padding: 0 5px; box-sizing: border-box; }
       .bar.big .seg.off b { color: var(--tx2); text-shadow: none; }
       .bar.big .seg.sel { box-shadow: inset 0 0 0 3px var(--hi); z-index: 1; }
       /* pièce */
@@ -781,7 +838,7 @@
       .dn { flex: 1; padding: 7px 0; border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--tx2); background: rgba(var(--ink), .05); position: relative; }
       .dn.on { color: #fff; background: rgb(var(--acc)); } .dn.mod::after { content: ""; position: absolute; top: 4px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; }
       .dbar { position: relative; margin: 26px 0 4px; touch-action: none; }
-      .handle { position: absolute; top: -24px; bottom: -4px; width: 30px; margin-left: -15px; display: flex; flex-direction: column; align-items: center; cursor: ew-resize; z-index: 2; touch-action: none; }
+      .handle { position: absolute; top: -24px; bottom: -4px; width: 18px; margin-left: -9px; display: flex; flex-direction: column; align-items: center; cursor: ew-resize; z-index: 2; touch-action: none; }
       .handle em { order: -1; font-style: normal; font-size: 10.5px; font-weight: 800; padding: 1px 5px; border-radius: 6px; background: rgba(var(--ink), .12); color: var(--tx); white-space: nowrap; }
       .handle i { flex: 1; width: 4px; border-radius: 2px; background: var(--hi); box-shadow: 0 0 0 2px rgba(0,0,0,.25); opacity: .85; }
       .handle.on em { background: rgb(var(--acc)); color: #fff; } .handle.on i { background: rgb(var(--acc)); }
@@ -792,7 +849,11 @@
       .ochips { display: flex; flex-wrap: wrap; gap: 6px; }
       .ochips .pchip { display: inline-flex; align-items: center; }
       .ochips .pchip ha-icon { --mdc-icon-size: 15px; margin-right: 4px; }
-      .slot { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; border-radius: 16px; background: rgba(var(--ink), .05); box-shadow: inset 0 0 0 1px rgba(var(--ink), .07); animation: vin .3s; }
+      .snav { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+      .snav span { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; font-size: 12.5px; font-weight: 800; }
+      .snav span small { font-size: 11.5px; font-weight: 600; color: var(--tx2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+      .hint .pchip { margin-left: auto; flex: none; }
+      .slot { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 12px; border-radius: 16px; background: rgba(var(--ink), .05); box-shadow: inset 0 0 0 1px rgba(var(--ink), .07); animation: vin .3s; }
       .sf { display: flex; flex-direction: column; gap: 6px; } .sf .pm span { min-width: 58px; text-align: center; font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; }
       .sa { grid-column: 1 / -1; display: flex; gap: 8px; }
       .hint { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 14px; font-size: 12px; color: var(--tx2); background: rgba(var(--ink), .04); }
