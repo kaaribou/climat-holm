@@ -1,0 +1,136 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Programação moderna do aquecimento e da climatização, divisão a divisão. Tudo se ajusta depois no cartão HOLM Climat.",
+        "data": {
+          "import_cs": "Importar os meus horários do Climate Scheduler",
+          "climates": "Dispositivos a adicionar (uma divisão por dispositivo)",
+          "start_running": "Ativar a programação já"
+        },
+        "data_description": {
+          "import_cs": "É criada uma divisão por cada grupo do Climate Scheduler, com o seu horário. Lembre-se de deixar esses horários desativados no Climate Scheduler.",
+          "climates": "Poderá adicionar, agrupar ou mudar o nome das divisões a partir do cartão.",
+          "start_running": "Desmarcado, o Climat HOLM não mexe em nada até ativar a programação no cartão."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "O Climat HOLM já está configurado."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Definições do Climat HOLM",
+        "data": {
+          "boost_temp": "Temperatura do boost",
+          "boost_minutes": "Duração do boost",
+          "away_temp": "Temperatura de ausência",
+          "cool_away_off": "Desligar o ar condicionado durante a ausência",
+          "manual_temp": "Temperatura do modo manual (padrão)",
+          "window_delay": "Atraso antes de parar se uma janela estiver aberta"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "room": {
+        "name": "Divisão"
+      }
+    },
+    "select": {
+      "profile": {
+        "name": "Perfil"
+      },
+      "season": {
+        "name": "Estação"
+      }
+    },
+    "switch": {
+      "running": {
+        "name": "Programação"
+      },
+      "away": {
+        "name": "Ausência"
+      },
+      "all_off": {
+        "name": "Parar tudo"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Aquece (ou arrefece) uma divisão durante um tempo definido.",
+      "fields": {
+        "entity_id": {
+          "name": "Divisão",
+          "description": "Termóstato Climat HOLM da divisão."
+        },
+        "room": {
+          "name": "Nome da divisão",
+          "description": "Alternativa à entidade."
+        },
+        "minutes": {
+          "name": "Duração",
+          "description": "Em minutos (0 = cancelar)."
+        }
+      }
+    },
+    "next_slot": {
+      "name": "Passar ao intervalo seguinte",
+      "description": "Aplica já o próximo intervalo do horário.",
+      "fields": {
+        "entity_id": {
+          "name": "Divisão",
+          "description": "Termóstato Climat HOLM da divisão."
+        },
+        "room": {
+          "name": "Nome da divisão",
+          "description": "Alternativa à entidade."
+        }
+      }
+    },
+    "cancel_override": {
+      "name": "Voltar ao horário",
+      "description": "Cancela a exceção e o boost.",
+      "fields": {
+        "entity_id": {
+          "name": "Divisão",
+          "description": "Termóstato Climat HOLM da divisão."
+        },
+        "room": {
+          "name": "Nome da divisão",
+          "description": "Alternativa à entidade."
+        }
+      }
+    },
+    "set_profile": {
+      "name": "Mudar de perfil",
+      "description": "Ativa um perfil (Normal, Férias…).",
+      "fields": {
+        "profile": {
+          "name": "Perfil",
+          "description": "Nome do perfil."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Ausência",
+      "description": "Ativa ou desativa o modo ausência.",
+      "fields": {
+        "away": {
+          "name": "Ausente",
+          "description": "Ativar ou não."
+        },
+        "until": {
+          "name": "Até",
+          "description": "Data e hora de regresso (opcional)."
+        }
+      }
+    }
+  }
+}

@@ -7,10 +7,228 @@
  * Tout se règle à la souris ou au doigt, sans YAML.
  */
 (() => {
-  const VERSION = "1.1.0";
+  // ---- HOLM i18n : textes écrits en français, traduits à l'affichage (en, de, es, it, nl, pt, pl) ----
+  // Langue : option `language` de la carte, sinon celle du profil Home Assistant ; anglais si la langue n'est pas traduite.
+  const HOLM_LANGS = ["en", "de", "es", "it", "nl", "pt", "pl"];
+  const LANG_NAMES = { fr: "Français", en: "English", de: "Deutsch", es: "Español", it: "Italiano", nl: "Nederlands", pt: "Português", pl: "Polski" };
+  const LOCALES = { fr: "fr-FR", en: "en-GB", de: "de-DE", es: "es-ES", it: "it-IT", nl: "nl-NL", pt: "pt-PT", pl: "pl-PL" };
+  const I18N = {
+    "Automatique (profil)": ["Automatic (profile)", "Automatisch (Profil)", "Automático (perfil)", "Automatica (profilo)", "Automatisch (profiel)", "Automático (perfil)", "Automatycznie (profil)"],
+    "Langue": ["Language", "Sprache", "Idioma", "Lingua", "Taal", "Idioma", "Język"],
+    "Titre": ["Title", "Titel", "Título", "Titolo", "Titel", "Título", "Tytuł"],
+    "Titre (optionnel)": ["Title (optional)", "Titel (optional)", "Título (opcional)", "Titolo (facoltativo)", "Titel (optioneel)", "Título (opcional)", "Tytuł (opcjonalnie)"],
+    "Nom": ["Name", "Name", "Nombre", "Nome", "Naam", "Nome", "Nazwa"],
+    "Nom affiché": ["Display name", "Anzeigename", "Nombre mostrado", "Nome visualizzato", "Weergavenaam", "Nome apresentado", "Wyświetlana nazwa"],
+    "Icône": ["Icon", "Symbol", "Icono", "Icona", "Pictogram", "Ícone", "Ikona"],
+    "Couleur": ["Colour", "Farbe", "Color", "Colore", "Kleur", "Cor", "Kolor"],
+    "Couleurs": ["Colours", "Farben", "Colores", "Colori", "Kleuren", "Cores", "Kolory"],
+    "Entité": ["Entity", "Entität", "Entidad", "Entità", "Entiteit", "Entidade", "Encja"],
+    "Entités": ["Entities", "Entitäten", "Entidades", "Entità", "Entiteiten", "Entidades", "Encje"],
+    "Chargement…": ["Loading…", "Wird geladen…", "Cargando…", "Caricamento…", "Laden…", "A carregar…", "Ładowanie…"],
+    "Erreur": ["Error", "Fehler", "Error", "Errore", "Fout", "Erro", "Błąd"],
+    "Fermer": ["Close", "Schließen", "Cerrar", "Chiudi", "Sluiten", "Fechar", "Zamknij"],
+    "Annuler": ["Cancel", "Abbrechen", "Cancelar", "Annulla", "Annuleren", "Cancelar", "Anuluj"],
+    "Enregistrer": ["Save", "Speichern", "Guardar", "Salva", "Opslaan", "Guardar", "Zapisz"],
+    "Supprimer": ["Delete", "Löschen", "Eliminar", "Elimina", "Verwijderen", "Eliminar", "Usuń"],
+    "Ajouter": ["Add", "Hinzufügen", "Añadir", "Aggiungi", "Toevoegen", "Adicionar", "Dodaj"],
+    "Monter": ["Move up", "Nach oben", "Subir", "Sposta su", "Omhoog", "Mover para cima", "W górę"],
+    "Descendre": ["Move down", "Nach unten", "Bajar", "Sposta giù", "Omlaag", "Mover para baixo", "W dół"],
+    "Afficher le cadre de la carte": ["Show the card frame", "Kartenrahmen anzeigen", "Mostrar el marco de la tarjeta", "Mostra la cornice della scheda", "Kaartkader tonen", "Mostrar a moldura do cartão", "Pokaż ramkę karty"],
+    "Indisponible": ["Unavailable", "Nicht verfügbar", "No disponible", "Non disponibile", "Niet beschikbaar", "Indisponível", "Niedostępne"],
+    "Aujourd'hui": ["Today", "Heute", "Hoy", "Oggi", "Vandaag", "Hoje", "Dziś"],
+    "Hier": ["Yesterday", "Gestern", "Ayer", "Ieri", "Gisteren", "Ontem", "Wczoraj"],
+    "Demain": ["Tomorrow", "Morgen", "Mañana", "Domani", "Morgen", "Amanhã", "Jutro"],
+    "Batterie": ["Battery", "Batterie", "Batería", "Batteria", "Batterij", "Bateria", "Bateria"],
+    "Aucune donnée sur cette période.": ["No data for this period.", "Keine Daten für diesen Zeitraum.", "No hay datos en este periodo.", "Nessun dato per questo periodo.", "Geen gegevens voor deze periode.", "Sem dados neste período.", "Brak danych w tym okresie."],
+    "à l'instant": ["just now", "gerade eben", "ahora mismo", "proprio ora", "zojuist", "agora mesmo", "przed chwilą"],
+    "il y a {n} min": ["{n} min ago", "vor {n} Min.", "hace {n} min", "{n} min fa", "{n} min geleden", "há {n} min", "{n} min temu"],
+    "il y a {n} h": ["{n} h ago", "vor {n} Std.", "hace {n} h", "{n} h fa", "{n} u geleden", "há {n} h", "{n} godz. temu"],
+    "il y a {n} j": ["{n} d ago", "vor {n} T.", "hace {n} d", "{n} g fa", "{n} d geleden", "há {n} d", "{n} dni temu"],
+    "Lun": ["Mon", "Mo", "Lun", "Lun", "Ma", "Seg", "Pon"],
+    "Mar": ["Tue", "Di", "Mar", "Mar", "Di", "Ter", "Wt"],
+    "Mer": ["Wed", "Mi", "Mié", "Mer", "Wo", "Qua", "Śr"],
+    "Jeu": ["Thu", "Do", "Jue", "Gio", "Do", "Qui", "Czw"],
+    "Ven": ["Fri", "Fr", "Vie", "Ven", "Vr", "Sex", "Pt"],
+    "Sam": ["Sat", "Sa", "Sáb", "Sab", "Za", "Sáb", "Sob"],
+    "Dim": ["Sun", "So", "Dom", "Dom", "Zo", "Dom", "Nd"],
+    "Lundi": ["Monday", "Montag", "Lunes", "Lunedì", "Maandag", "Segunda-feira", "Poniedziałek"],
+    "Mardi": ["Tuesday", "Dienstag", "Martes", "Martedì", "Dinsdag", "Terça-feira", "Wtorek"],
+    "Mercredi": ["Wednesday", "Mittwoch", "Miércoles", "Mercoledì", "Woensdag", "Quarta-feira", "Środa"],
+    "Jeudi": ["Thursday", "Donnerstag", "Jueves", "Giovedì", "Donderdag", "Quinta-feira", "Czwartek"],
+    "Vendredi": ["Friday", "Freitag", "Viernes", "Venerdì", "Vrijdag", "Sexta-feira", "Piątek"],
+    "Samedi": ["Saturday", "Samstag", "Sábado", "Sabato", "Zaterdag", "Sábado", "Sobota"],
+    "Dimanche": ["Sunday", "Sonntag", "Domingo", "Domenica", "Zondag", "Domingo", "Niedziela"],
+    "Chauffage": ["Heating", "Heizung", "Calefacción", "Riscaldamento", "Verwarming", "Aquecimento", "Ogrzewanie"],
+    "Chauffe": ["Heat", "Heizen", "Calor", "Caldo", "Warmte", "Calor", "Grzanie"],
+    "Climatisation": ["Air conditioning", "Klimaanlage", "Climatización", "Climatizzazione", "Airco", "Climatização", "Klimatyzacja"],
+    "Clim": ["A/C", "Klima", "A/A", "Clima", "Airco", "A/C", "Klima"],
+    "Chaud / froid": ["Heat / cool", "Heizen / Kühlen", "Calor / frío", "Caldo / freddo", "Warm / koud", "Calor / frio", "Grzanie / chłodzenie"],
+    "Chaud/froid": ["Heat/cool", "Heiz./Kühl.", "Calor/frío", "Caldo/freddo", "Warm/koud", "Calor/frio", "Grz./chł."],
+    "Automatique": ["Automatic", "Automatisch", "Automático", "Automatico", "Automatisch", "Automático", "Automatyczny"],
+    "Auto": ["Auto", "Auto", "Auto", "Auto", "Auto", "Auto", "Auto"],
+    "Déshumidification": ["Dry", "Entfeuchtung", "Deshumidificación", "Deumidificazione", "Ontvochtigen", "Desumidificação", "Osuszanie"],
+    "Déshum.": ["Dry", "Entf.", "Deshum.", "Deumid.", "Ontv.", "Desum.", "Osusz."],
+    "Ventilation seule": ["Fan only", "Nur Lüftung", "Solo ventilación", "Solo ventilazione", "Alleen ventilatie", "Só ventilação", "Tylko wentylacja"],
+    "Ventilation": ["Fan", "Lüftung", "Ventilación", "Ventilazione", "Ventilatie", "Ventilação", "Wentylacja"],
+    "Ventil.": ["Fan", "Lüft.", "Ventil.", "Ventil.", "Ventil.", "Ventil.", "Went."],
+    "Préréglage": ["Preset", "Voreinstellung", "Preajuste", "Preset", "Voorinstelling", "Predefinição", "Ustawienie"],
+    "Oscillation verticale": ["Vertical swing", "Vertikales Schwenken", "Oscilación vertical", "Oscillazione verticale", "Verticaal zwenken", "Oscilação vertical", "Wahanie pionowe"],
+    "Oscillation horizontale": ["Horizontal swing", "Horizontales Schwenken", "Oscilación horizontal", "Oscillazione orizzontale", "Horizontaal zwenken", "Oscilação horizontal", "Wahanie poziome"],
+    "Silencieux": ["Quiet", "Leise", "Silencioso", "Silenzioso", "Stil", "Silencioso", "Cichy"],
+    "Faible": ["Low", "Niedrig", "Baja", "Bassa", "Laag", "Baixa", "Niski"],
+    "Moyen": ["Medium", "Mittel", "Media", "Media", "Middel", "Média", "Średni"],
+    "Fort": ["High", "Hoch", "Alta", "Alta", "Hoog", "Alta", "Wysoki"],
+    "Arrêt": ["Off", "Aus", "Apagado", "Spento", "Uit", "Desligado", "Wył."],
+    "arrêt": ["off", "aus", "apagado", "spento", "uit", "desligado", "wył."],
+    "Balayage": ["Swing", "Schwenken", "Barrido", "Oscillazione", "Zwenken", "Oscilação", "Wahanie"],
+    "Les deux": ["Both", "Beide", "Ambos", "Entrambi", "Beide", "Ambos", "Oba"],
+    "Vertical": ["Vertical", "Vertikal", "Vertical", "Verticale", "Verticaal", "Vertical", "Pionowo"],
+    "Horizontal": ["Horizontal", "Horizontal", "Horizontal", "Orizzontale", "Horizontaal", "Horizontal", "Poziomo"],
+    "Flux confort": ["Comfort airflow", "Komfort-Luftstrom", "Flujo confort", "Flusso comfort", "Comfortluchtstroom", "Fluxo conforto", "Komfortowy przepływ"],
+    "Aucun": ["None", "Keine", "Ninguno", "Nessuno", "Geen", "Nenhum", "Brak"],
+    "Absence": ["Away", "Abwesenheit", "Ausencia", "Assenza", "Afwezig", "Ausência", "Nieobecność"],
+    "Boost": ["Boost", "Boost", "Boost", "Boost", "Boost", "Boost", "Boost"],
+    "Éco": ["Eco", "Eco", "Eco", "Eco", "Eco", "Eco", "Eko"],
+    "Confort": ["Comfort", "Komfort", "Confort", "Comfort", "Comfort", "Conforto", "Komfort"],
+    "Nuit": ["Sleep", "Nacht", "Noche", "Notte", "Nacht", "Noite", "Noc"],
+    "Maison": ["Home", "Zuhause", "Casa", "Casa", "Thuis", "Casa", "Dom"],
+    "Activité": ["Activity", "Aktivität", "Actividad", "Attività", "Activiteit", "Atividade", "Aktywność"],
+    "Vitesse ": ["Speed ", "Stufe ", "Velocidad ", "Velocità ", "Stand ", "Velocidade ", "Prędkość "],
+    "demain ": ["tomorrow ", "morgen ", "mañana ", "domani ", "morgen ", "amanhã ", "jutro "],
+    "L'intégration Climat HOLM n'est pas installée.": ["The Climat HOLM integration is not installed.", "Die Integration Climat HOLM ist nicht installiert.", "La integración Climat HOLM no está instalada.", "L'integrazione Climat HOLM non è installata.", "De integratie Climat HOLM is niet geïnstalleerd.", "A integração Climat HOLM não está instalada.", "Integracja Climat HOLM nie jest zainstalowana."],
+    "Action impossible": ["Action failed", "Aktion nicht möglich", "Acción imposible", "Azione non riuscita", "Actie mislukt", "Ação impossível", "Działanie niemożliwe"],
+    "Programmation en pause — Climat HOLM ne pilote rien": ["Scheduling paused — Climat HOLM controls nothing", "Planung pausiert — Climat HOLM steuert nichts", "Programación en pausa — Climat HOLM no controla nada", "Programmazione in pausa — Climat HOLM non comanda nulla", "Planning gepauzeerd — Climat HOLM stuurt niets aan", "Programação em pausa — o Climat HOLM não comanda nada", "Harmonogram wstrzymany — Climat HOLM niczym nie steruje"],
+    "Tout est arrêté": ["Everything is off", "Alles ist aus", "Todo está apagado", "Tutto è spento", "Alles staat uit", "Está tudo desligado", "Wszystko wyłączone"],
+    " jusqu'à {t}": [" until {t}", " bis {t}", " hasta {t}", " fino a {t}", " tot {t}", " até {t}", " do {t}"],
+    "Profil {p}": ["Profile {p}", "Profil {p}", "Perfil {p}", "Profilo {p}", "Profiel {p}", "Perfil {p}", "Profil {p}"],
+    "{n} pièce en chauffe": ["{n} room heating", "{n} Raum heizt", "{n} estancia calentando", "{n} stanza in riscaldamento", "{n} kamer verwarmt", "{n} divisão a aquecer", "{n} pokój się nagrzewa"],
+    "{n} pièces en chauffe": ["{n} rooms heating", "{n} Räume heizen", "{n} estancias calentando", "{n} stanze in riscaldamento", "{n} kamers verwarmen", "{n} divisões a aquecer", "{n} pokoje się nagrzewają"],
+    "{n} pièce en refroidissement": ["{n} room cooling", "{n} Raum kühlt", "{n} estancia enfriando", "{n} stanza in raffreddamento", "{n} kamer koelt", "{n} divisão a arrefecer", "{n} pokój się chłodzi"],
+    "{n} pièces en refroidissement": ["{n} rooms cooling", "{n} Räume kühlen", "{n} estancias enfriando", "{n} stanze in raffreddamento", "{n} kamers koelen", "{n} divisões a arrefecer", "{n} pokoje się chłodzą"],
+    "Réglages": ["Settings", "Einstellungen", "Ajustes", "Impostazioni", "Instellingen", "Definições", "Ustawienia"],
+    "Mettre en pause": ["Pause", "Pausieren", "Pausar", "Metti in pausa", "Pauzeren", "Pausar", "Wstrzymaj"],
+    "Activer la programmation": ["Turn scheduling on", "Planung aktivieren", "Activar la programación", "Attiva la programmazione", "Planning inschakelen", "Ativar a programação", "Włącz harmonogram"],
+    "Tout arrêter": ["Stop everything", "Alles ausschalten", "Detener todo", "Ferma tutto", "Alles stoppen", "Parar tudo", "Zatrzymaj wszystko"],
+    "Nouveau profil": ["New profile", "Neues Profil", "Nuevo perfil", "Nuovo profilo", "Nieuw profiel", "Novo perfil", "Nowy profil"],
+    "Nouveau profil (copie du profil actif)": ["New profile (copy of the active profile)", "Neues Profil (Kopie des aktiven Profils)", "Nuevo perfil (copia del perfil activo)", "Nuovo profilo (copia del profilo attivo)", "Nieuw profiel (kopie van het actieve profiel)", "Novo perfil (cópia do perfil ativo)", "Nowy profil (kopia aktywnego profilu)"],
+    "Renommer / supprimer le profil actif": ["Rename / delete the active profile", "Aktives Profil umbenennen / löschen", "Renombrar / eliminar el perfil activo", "Rinomina / elimina il profilo attivo", "Actief profiel hernoemen / verwijderen", "Mudar o nome / eliminar o perfil ativo", "Zmień nazwę / usuń aktywny profil"],
+    "Profil « {p} »": ["Profile “{p}”", "Profil „{p}“", "Perfil «{p}»", "Profilo «{p}»", "Profiel ‘{p}’", "Perfil «{p}»", "Profil „{p}”"],
+    "Renommer": ["Rename", "Umbenennen", "Renombrar", "Rinomina", "Hernoemen", "Mudar o nome", "Zmień nazwę"],
+    "Aucune pièce pour l'instant": ["No rooms yet", "Noch keine Räume", "Aún no hay estancias", "Nessuna stanza per ora", "Nog geen kamers", "Ainda não há divisões", "Brak pokoi"],
+    "Importer depuis Climate Scheduler": ["Import from Climate Scheduler", "Aus Climate Scheduler importieren", "Importar desde Climate Scheduler", "Importa da Climate Scheduler", "Importeren uit Climate Scheduler", "Importar do Climate Scheduler", "Importuj z Climate Scheduler"],
+    "Ajouter une pièce": ["Add a room", "Raum hinzufügen", "Añadir una estancia", "Aggiungi una stanza", "Kamer toevoegen", "Adicionar uma divisão", "Dodaj pokój"],
+    "Programmation en pause": ["Scheduling paused", "Planung pausiert", "Programación en pausa", "Programmazione in pausa", "Planning gepauzeerd", "Programação em pausa", "Harmonogram wstrzymany"],
+    "Tout arrêté": ["Everything off", "Alles aus", "Todo apagado", "Tutto spento", "Alles uit", "Tudo desligado", "Wszystko wyłączone"],
+    "Fenêtre ouverte — arrêt": ["Window open — off", "Fenster offen — aus", "Ventana abierta — apagado", "Finestra aperta — spento", "Raam open — uit", "Janela aberta — desligado", "Okno otwarte — wył."],
+    "Boost · encore {t}": ["Boost · {t} left", "Boost · noch {t}", "Boost · quedan {t}", "Boost · ancora {t}", "Boost · nog {t}", "Boost · faltam {t}", "Boost · jeszcze {t}"],
+    "Manuel · {v}": ["Manual · {v}", "Manuell · {v}", "Manual · {v}", "Manuale · {v}", "Handmatig · {v}", "Manual · {v}", "Ręcznie · {v}"],
+    "{v} jusqu'à {t} (dérogation)": ["{v} until {t} (override)", "{v} bis {t} (Übersteuerung)", "{v} hasta {t} (excepción)", "{v} fino a {t} (deroga)", "{v} tot {t} (afwijking)", "{v} até {t} (exceção)", "{v} do {t} (odstępstwo)"],
+    "{a} · puis {b} à {t}": ["{a} · then {b} at {t}", "{a} · dann {b} um {t}", "{a} · luego {b} a las {t}", "{a} · poi {b} alle {t}", "{a} · daarna {b} om {t}", "{a} · depois {b} às {t}", "{a} · potem {b} o {t}"],
+    "Réglages de la pièce": ["Room settings", "Raumeinstellungen", "Ajustes de la estancia", "Impostazioni della stanza", "Kamerinstellingen", "Definições da divisão", "Ustawienia pokoju"],
+    "Actuelle": ["Current", "Aktuell", "Actual", "Attuale", "Huidig", "Atual", "Obecna"],
+    "Refroidit": ["Cooling", "Kühlt", "Enfría", "Raffredda", "Koelt", "Arrefece", "Chłodzi"],
+    "Consigne": ["Setpoint", "Sollwert", "Consigna", "Setpoint", "Setpoint", "Temperatura alvo", "Nastawa"],
+    "Manuel": ["Manual", "Manuell", "Manual", "Manuale", "Handmatig", "Manual", "Ręcznie"],
+    "Mode manuel": ["Manual mode", "Manueller Modus", "Modo manual", "Modalità manuale", "Handmatige modus", "Modo manual", "Tryb ręczny"],
+    "Arrêter le boost": ["Stop the boost", "Boost beenden", "Detener el boost", "Ferma il boost", "Boost stoppen", "Parar o boost", "Zatrzymaj boost"],
+    "Boost {n} min": ["Boost {n} min", "Boost {n} Min.", "Boost {n} min", "Boost {n} min", "Boost {n} min", "Boost {n} min", "Boost {n} min"],
+    "Créneau suivant": ["Next slot", "Nächstes Zeitfenster", "Siguiente tramo", "Fascia successiva", "Volgend tijdvak", "Intervalo seguinte", "Następny przedział"],
+    "Revenir au planning": ["Back to schedule", "Zurück zum Plan", "Volver al horario", "Torna al programma", "Terug naar schema", "Voltar ao horário", "Wróć do harmonogramu"],
+    "Planning · profil {p}": ["Schedule · profile {p}", "Plan · Profil {p}", "Horario · perfil {p}", "Programma · profilo {p}", "Schema · profiel {p}", "Horário · perfil {p}", "Harmonogram · profil {p}"],
+    "Touchez un jour pour le modifier": ["Tap a day to edit it", "Tippen Sie auf einen Tag, um ihn zu bearbeiten", "Toca un día para modificarlo", "Tocca un giorno per modificarlo", "Tik op een dag om te bewerken", "Toque num dia para o alterar", "Dotknij dnia, aby go edytować"],
+    "Sonde : {n}": ["Sensor: {n}", "Sensor: {n}", "Sonda: {n}", "Sonda: {n}", "Sensor: {n}", "Sonda: {n}", "Czujnik: {n}"],
+    "{n} ouvrant surveillé": ["{n} opening watched", "{n} Öffnung überwacht", "{n} apertura vigilada", "{n} apertura monitorata", "{n} opening bewaakt", "{n} abertura vigiada", "{n} monitorowane otwarcie"],
+    "{n} ouvrants surveillés": ["{n} openings watched", "{n} Öffnungen überwacht", "{n} aperturas vigiladas", "{n} aperture monitorate", "{n} openingen bewaakt", "{n} aberturas vigiadas", "{n} monitorowanych otwarć"],
+    "Mode": ["Mode", "Modus", "Modo", "Modalità", "Modus", "Modo", "Tryb"],
+    "Saison ({s})": ["Season ({s})", "Jahreszeit ({s})", "Temporada ({s})", "Stagione ({s})", "Seizoen ({s})", "Estação ({s})", "Sezon ({s})"],
+    "Par défaut": ["Default", "Standard", "Por defecto", "Predefinito", "Standaard", "Padrão", "Domyślnie"],
+    "Créneau précédent (←)": ["Previous slot (←)", "Vorheriges Zeitfenster (←)", "Tramo anterior (←)", "Fascia precedente (←)", "Vorig tijdvak (←)", "Intervalo anterior (←)", "Poprzedni przedział (←)"],
+    "Créneau suivant (→)": ["Next slot (→)", "Nächstes Zeitfenster (→)", "Tramo siguiente (→)", "Fascia successiva (→)", "Volgend tijdvak (→)", "Intervalo seguinte (→)", "Następny przedział (→)"],
+    "Créneau {i} / {n}": ["Slot {i} / {n}", "Zeitfenster {i} / {n}", "Tramo {i} / {n}", "Fascia {i} / {n}", "Tijdvak {i} / {n}", "Intervalo {i} / {n}", "Przedział {i} / {n}"],
+    "Début": ["Start", "Beginn", "Inicio", "Inizio", "Begin", "Início", "Początek"],
+    "Fin": ["End", "Ende", "Fin", "Fine", "Einde", "Fim", "Koniec"],
+    "Sans consigne": ["No setpoint", "Ohne Sollwert", "Sin consigna", "Senza setpoint", "Geen setpoint", "Sem temperatura alvo", "Bez nastawy"],
+    "Température": ["Temperature", "Temperatur", "Temperatura", "Temperatura", "Temperatuur", "Temperatura", "Temperatura"],
+    "Rallumer": ["Turn back on", "Wieder einschalten", "Volver a encender", "Riaccendi", "Weer aanzetten", "Voltar a ligar", "Włącz ponownie"],
+    "Touchez une plage de la frise pour la régler, ou faites glisser les poignées pour changer les horaires.": ["Tap a range on the timeline to set it, or drag the handles to change the times.", "Tippen Sie auf einen Bereich der Zeitleiste, um ihn einzustellen, oder ziehen Sie die Griffe, um die Zeiten zu ändern.", "Toca un tramo de la línea de tiempo para ajustarlo, o arrastra los tiradores para cambiar los horarios.", "Tocca una fascia della linea temporale per regolarla, o trascina le maniglie per cambiare gli orari.", "Tik op een tijdvak in de tijdlijn om het in te stellen, of sleep de grepen om de tijden te wijzigen.", "Toque num intervalo da cronologia para o ajustar, ou arraste as pegas para mudar os horários.", "Dotknij przedziału na osi czasu, aby go ustawić, lub przeciągnij uchwyty, aby zmienić godziny."],
+    "Parcourir les créneaux": ["Browse the slots", "Zeitfenster durchgehen", "Recorrer los tramos", "Scorri le fasce", "Tijdvakken doorlopen", "Percorrer os intervalos", "Przeglądaj przedziały"],
+    "Ajouter un créneau": ["Add a slot", "Zeitfenster hinzufügen", "Añadir un tramo", "Aggiungi una fascia", "Tijdvak toevoegen", "Adicionar um intervalo", "Dodaj przedział"],
+    "Copier ce jour vers": ["Copy this day to", "Diesen Tag kopieren nach", "Copiar este día a", "Copia questo giorno su", "Deze dag kopiëren naar", "Copiar este dia para", "Kopiuj ten dzień do"],
+    "Lun → Ven": ["Mon → Fri", "Mo → Fr", "Lun → Vie", "Lun → Ven", "Ma → Vr", "Seg → Sex", "Pon → Pt"],
+    "Week-end": ["Weekend", "Wochenende", "Fin de semana", "Weekend", "Weekend", "Fim de semana", "Weekend"],
+    "Tous": ["All", "Alle", "Todos", "Tutti", "Alle", "Todos", "Wszystkie"],
+    "Appliquer aussi la semaine à": ["Also apply the week to", "Woche auch anwenden auf", "Aplicar también la semana a", "Applica la settimana anche a", "De week ook toepassen op", "Aplicar também a semana a", "Zastosuj tydzień także do"],
+    "Réglages · ": ["Settings · ", "Einstellungen · ", "Ajustes · ", "Impostazioni · ", "Instellingen · ", "Definições · ", "Ustawienia · "],
+    "Nouvelle pièce": ["New room", "Neuer Raum", "Nueva estancia", "Nuova stanza", "Nieuwe kamer", "Nova divisão", "Nowy pokój"],
+    "Créer la pièce": ["Create the room", "Raum erstellen", "Crear la estancia", "Crea la stanza", "Kamer aanmaken", "Criar a divisão", "Utwórz pokój"],
+    "Confirmer la suppression": ["Confirm deletion", "Löschen bestätigen", "Confirmar la eliminación", "Conferma l'eliminazione", "Verwijderen bevestigen", "Confirmar a eliminação", "Potwierdź usunięcie"],
+    "Supprimer la pièce": ["Delete the room", "Raum löschen", "Eliminar la estancia", "Elimina la stanza", "Kamer verwijderen", "Eliminar a divisão", "Usuń pokój"],
+    "Réglages généraux": ["General settings", "Allgemeine Einstellungen", "Ajustes generales", "Impostazioni generali", "Algemene instellingen", "Definições gerais", "Ustawienia ogólne"],
+    "carte": ["card", "Karte", "tarjeta", "scheda", "kaart", "cartão", "karta"],
+    "Température du boost": ["Boost temperature", "Boost-Temperatur", "Temperatura del boost", "Temperatura del boost", "Boosttemperatuur", "Temperatura do boost", "Temperatura boostu"],
+    "Durée du boost": ["Boost duration", "Boost-Dauer", "Duración del boost", "Durata del boost", "Boostduur", "Duração do boost", "Czas boostu"],
+    "Température en absence": ["Away temperature", "Abwesenheitstemperatur", "Temperatura en ausencia", "Temperatura in assenza", "Afwezigheidstemperatuur", "Temperatura de ausência", "Temperatura podczas nieobecności"],
+    "Mode manuel (par défaut)": ["Manual mode (default)", "Manueller Modus (Standard)", "Modo manual (por defecto)", "Modalità manuale (predefinita)", "Handmatige modus (standaard)", "Modo manual (padrão)", "Tryb ręczny (domyślny)"],
+    "Délai avant arrêt si fenêtre ouverte": ["Delay before stopping if a window is open", "Verzögerung vor dem Ausschalten bei offenem Fenster", "Retardo antes de parar si hay una ventana abierta", "Ritardo prima dello spegnimento con finestra aperta", "Vertraging vóór uitschakelen bij open raam", "Atraso antes de parar com janela aberta", "Opóźnienie wyłączenia przy otwartym oknie"],
+    "Arrêter la clim pendant une absence": ["Turn the A/C off while away", "Klimaanlage bei Abwesenheit ausschalten", "Apagar la climatización durante una ausencia", "Spegni il clima durante un'assenza", "Airco uitzetten bij afwezigheid", "Desligar o ar condicionado durante uma ausência", "Wyłącz klimatyzację podczas nieobecności"],
+    "Ne pas changer": ["Don't change", "Nicht ändern", "No cambiar", "Non cambiare", "Niet wijzigen", "Não alterar", "Nie zmieniaj"],
+    "Réglages par défaut des appareils": ["Device default settings", "Standardeinstellungen der Geräte", "Ajustes por defecto de los dispositivos", "Impostazioni predefinite dei dispositivi", "Standaardinstellingen van de apparaten", "Definições padrão dos dispositivos", "Domyślne ustawienia urządzeń"],
+    "Nom de la pièce": ["Room name", "Raumname", "Nombre de la estancia", "Nome della stanza", "Naam van de kamer", "Nome da divisão", "Nazwa pokoju"],
+    "Appareils (radiateurs, clims…)": ["Devices (heaters, air conditioners…)", "Geräte (Heizkörper, Klimaanlagen…)", "Dispositivos (radiadores, aires…)", "Dispositivi (radiatori, climatizzatori…)", "Apparaten (radiatoren, airco's…)", "Dispositivos (radiadores, ar condicionado…)", "Urządzenia (grzejniki, klimatyzatory…)"],
+    "Sonde de température (facultatif)": ["Temperature sensor (optional)", "Temperatursensor (optional)", "Sonda de temperatura (opcional)", "Sonda di temperatura (facoltativa)", "Temperatuursensor (optioneel)", "Sonda de temperatura (opcional)", "Czujnik temperatury (opcjonalnie)"],
+    "Fenêtres / portes : arrêt si ouvert (facultatif)": ["Windows / doors: off when open (optional)", "Fenster / Türen: aus, wenn offen (optional)", "Ventanas / puertas: apagado si se abren (opcional)", "Finestre / porte: spento se aperte (facoltativo)", "Ramen / deuren: uit bij open (optioneel)", "Janelas / portas: desliga se abertas (opcional)", "Okna / drzwi: wyłącz, gdy otwarte (opcjonalnie)"],
+    "Cette plage vient de la veille : ajoutez un créneau à 00:00 pour la modifier.": ["This range comes from the previous day: add a slot at 00:00 to change it.", "Dieser Bereich stammt vom Vortag: Fügen Sie um 00:00 ein Zeitfenster hinzu, um ihn zu ändern.", "Este tramo viene del día anterior: añade un tramo a las 00:00 para modificarlo.", "Questa fascia viene dal giorno prima: aggiungi una fascia alle 00:00 per modificarla.", "Dit tijdvak komt van de vorige dag: voeg om 00:00 een tijdvak toe om het te wijzigen.", "Este intervalo vem do dia anterior: adicione um intervalo às 00:00 para o alterar.", "Ten przedział pochodzi z poprzedniego dnia: dodaj przedział o 00:00, aby go zmienić."],
+    "Modifications non enregistrées : touchez encore ‹ pour les abandonner": ["Unsaved changes: tap ‹ again to discard them", "Nicht gespeicherte Änderungen: Tippen Sie erneut auf ‹, um sie zu verwerfen", "Cambios sin guardar: toca ‹ otra vez para descartarlos", "Modifiche non salvate: tocca di nuovo ‹ per annullarle", "Niet-opgeslagen wijzigingen: tik nogmaals op ‹ om ze te verwerpen", "Alterações não guardadas: toque de novo em ‹ para as descartar", "Niezapisane zmiany: dotknij ‹ ponownie, aby je odrzucić"],
+    "Programmation activée": ["Scheduling on", "Planung aktiviert", "Programación activada", "Programmazione attivata", "Planning ingeschakeld", "Programação ativada", "Harmonogram włączony"],
+    "Retour à la maison": ["Back home", "Zurück zu Hause", "De vuelta en casa", "Ritorno a casa", "Weer thuis", "De volta a casa", "Powrót do domu"],
+    "Mode absence activé": ["Away mode on", "Abwesenheitsmodus aktiv", "Modo ausencia activado", "Modalità assenza attivata", "Afwezigheidsmodus aan", "Modo ausência ativado", "Tryb nieobecności włączony"],
+    "Chauffage relancé": ["Heating restarted", "Heizung wieder gestartet", "Calefacción reanudada", "Riscaldamento riavviato", "Verwarming herstart", "Aquecimento retomado", "Ogrzewanie wznowione"],
+    "Profil supprimé": ["Profile deleted", "Profil gelöscht", "Perfil eliminado", "Profilo eliminato", "Profiel verwijderd", "Perfil eliminado", "Profil usunięty"],
+    "Profil renommé": ["Profile renamed", "Profil umbenannt", "Perfil renombrado", "Profilo rinominato", "Profiel hernoemd", "Perfil renomeado", "Zmieniono nazwę profilu"],
+    "Profil « {p} » créé (copie de {q})": ["Profile “{p}” created (copy of {q})", "Profil „{p}“ erstellt (Kopie von {q})", "Perfil «{p}» creado (copia de {q})", "Profilo «{p}» creato (copia di {q})", "Profiel ‘{p}’ aangemaakt (kopie van {q})", "Perfil «{p}» criado (cópia de {q})", "Utworzono profil „{p}” (kopia {q})"],
+    "{n} pièce(s) importée(s)": ["{n} room(s) imported", "{n} Raum/Räume importiert", "{n} estancia(s) importada(s)", "{n} stanza/e importata/e", "{n} kamer(s) geïmporteerd", "{n} divisão(ões) importada(s)", "Zaimportowano pokoje: {n}"],
+    "Rien de nouveau à importer": ["Nothing new to import", "Nichts Neues zu importieren", "Nada nuevo que importar", "Niente di nuovo da importare", "Niets nieuws om te importeren", "Nada de novo para importar", "Nic nowego do zaimportowania"],
+    "Consigne modifiée jusqu'au prochain créneau": ["Setpoint changed until the next slot", "Sollwert bis zum nächsten Zeitfenster geändert", "Consigna modificada hasta el siguiente tramo", "Setpoint modificato fino alla prossima fascia", "Setpoint gewijzigd tot het volgende tijdvak", "Temperatura alvo alterada até ao próximo intervalo", "Nastawa zmieniona do następnego przedziału"],
+    "Boost lancé": ["Boost started", "Boost gestartet", "Boost iniciado", "Boost avviato", "Boost gestart", "Boost iniciado", "Boost uruchomiony"],
+    "Créneau suivant appliqué": ["Next slot applied", "Nächstes Zeitfenster angewendet", "Siguiente tramo aplicado", "Fascia successiva applicata", "Volgend tijdvak toegepast", "Intervalo seguinte aplicado", "Zastosowano następny przedział"],
+    "Retour au planning": ["Back to schedule", "Zurück zum Plan", "De vuelta al horario", "Ritorno al programma", "Terug naar schema", "De volta ao horário", "Powrót do harmonogramu"],
+    "Copié vers {d}": ["Copied to {d}", "Kopiert nach {d}", "Copiado a {d}", "Copiato su {d}", "Gekopieerd naar {d}", "Copiado para {d}", "Skopiowano do {d}"],
+    "Planning enregistré": ["Schedule saved", "Plan gespeichert", "Horario guardado", "Programma salvato", "Schema opgeslagen", "Horário guardado", "Zapisano harmonogram"],
+    "Planning enregistré (+ {n} pièce)": ["Schedule saved (+ {n} room)", "Plan gespeichert (+ {n} Raum)", "Horario guardado (+ {n} estancia)", "Programma salvato (+ {n} stanza)", "Schema opgeslagen (+ {n} kamer)", "Horário guardado (+ {n} divisão)", "Zapisano harmonogram (+ {n} pokój)"],
+    "Planning enregistré (+ {n} pièces)": ["Schedule saved (+ {n} rooms)", "Plan gespeichert (+ {n} Räume)", "Horario guardado (+ {n} estancias)", "Programma salvato (+ {n} stanze)", "Schema opgeslagen (+ {n} kamers)", "Horário guardado (+ {n} divisões)", "Zapisano harmonogram (+ {n} pokoje)"],
+    "Indiquez un nom et au moins un appareil": ["Enter a name and at least one device", "Geben Sie einen Namen und mindestens ein Gerät an", "Indica un nombre y al menos un dispositivo", "Indica un nome e almeno un dispositivo", "Geef een naam en minstens één apparaat op", "Indique um nome e pelo menos um dispositivo", "Podaj nazwę i co najmniej jedno urządzenie"],
+    "Pièce enregistrée": ["Room saved", "Raum gespeichert", "Estancia guardada", "Stanza salvata", "Kamer opgeslagen", "Divisão guardada", "Zapisano pokój"],
+    "Pièce créée": ["Room created", "Raum erstellt", "Estancia creada", "Stanza creata", "Kamer aangemaakt", "Divisão criada", "Utworzono pokój"],
+    "Pièce supprimée": ["Room deleted", "Raum gelöscht", "Estancia eliminada", "Stanza eliminata", "Kamer verwijderd", "Divisão eliminada", "Usunięto pokój"],
+    "Réglages enregistrés": ["Settings saved", "Einstellungen gespeichert", "Ajustes guardados", "Impostazioni salvate", "Instellingen opgeslagen", "Definições guardadas", "Zapisano ustawienia"],
+    "Plus de place ici : raccourcissez d'abord une plage": ["No room left here: shorten a range first", "Hier ist kein Platz mehr: Kürzen Sie zuerst einen Bereich", "No queda sitio aquí: acorta primero un tramo", "Non c'è più spazio qui: accorcia prima una fascia", "Hier is geen ruimte meer: verkort eerst een tijdvak", "Não há espaço aqui: encurte primeiro um intervalo", "Brak miejsca: najpierw skróć przedział"],
+    "Automatique (clair / sombre)": ["Automatic (light / dark)", "Automatisch (hell / dunkel)", "Automático (claro / oscuro)", "Automatico (chiaro / scuro)", "Automatisch (licht / donker)", "Automático (claro / escuro)", "Automatycznie (jasny / ciemny)"],
+    "Sombre": ["Dark", "Dunkel", "Oscuro", "Scuro", "Donker", "Escuro", "Ciemny"],
+    "Clair": ["Light", "Hell", "Claro", "Chiaro", "Licht", "Claro", "Jasny"],
+    "Couleurs de mon thème": ["My theme colours", "Farben meines Themes", "Colores de mi tema", "Colori del mio tema", "Kleuren van mijn thema", "Cores do meu tema", "Kolory mojego motywu"],
+    "Titre (vide = Chauffage / Climatisation)": ["Title (empty = Heating / Air conditioning)", "Titel (leer = Heizung / Klimaanlage)", "Título (vacío = Calefacción / Climatización)", "Titolo (vuoto = Riscaldamento / Climatizzazione)", "Titel (leeg = Verwarming / Airco)", "Título (vazio = Aquecimento / Climatização)", "Tytuł (puste = Ogrzewanie / Klimatyzacja)"],
+    "Pièces affichées (aucune cochée = toutes)": ["Rooms shown (none ticked = all)", "Angezeigte Räume (keiner angekreuzt = alle)", "Estancias mostradas (ninguna marcada = todas)", "Stanze mostrate (nessuna spuntata = tutte)", "Getoonde kamers (geen aangevinkt = alle)", "Divisões mostradas (nenhuma marcada = todas)", "Wyświetlane pokoje (brak zaznaczenia = wszystkie)"],
+    "Apparence": ["Appearance", "Darstellung", "Apariencia", "Aspetto", "Weergave", "Aparência", "Wygląd"],
+    "HOLM Climat": ["HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat"],
+    "Programmation du chauffage et de la clim, pièce par pièce (intégration Climat HOLM).": ["Heating and A/C scheduling, room by room (Climat HOLM integration).", "Heizungs- und Klimaplanung, Raum für Raum (Integration Climat HOLM).", "Programación de calefacción y climatización, estancia por estancia (integración Climat HOLM).", "Programmazione di riscaldamento e clima, stanza per stanza (integrazione Climat HOLM).", "Planning van verwarming en airco, kamer per kamer (integratie Climat HOLM).", "Programação do aquecimento e da climatização, divisão a divisão (integração Climat HOLM).", "Harmonogram ogrzewania i klimatyzacji, pokój po pokoju (integracja Climat HOLM)."]
+  };
+  let LANG = "fr", NUMLOC = "fr-FR";
+  const langOf = (hass, c) => { const l = String((c && c.language) || (hass && ((hass.locale && hass.locale.language) || hass.language)) || navigator.language || "en").toLowerCase().split(/[-_]/)[0]; return l === "fr" || HOLM_LANGS.includes(l) ? l : "en"; };
+  const setLang = (hass, c) => { LANG = langOf(hass, c); const p = hass && hass.locale && hass.locale.language; NUMLOC = !(c && c.language) && p && p.toLowerCase().startsWith(LANG) ? p : LOCALES[LANG]; return LANG; };
+  const _ = (s, v) => { let o = LANG === "fr" ? s : ((I18N[s] && I18N[s][HOLM_LANGS.indexOf(LANG)]) || s); if (v) for (const k in v) o = o.split("{" + k + "}").join(v[k]); return o; };
+  // champ « Langue » pour les éditeurs visuels (ha-form)
+  const langField = () => ({ name: "language", selector: { select: { mode: "dropdown", options: [{ value: "", label: _("Automatique (profil)") }, ...Object.entries(LANG_NAMES).map(([value, label]) => ({ value, label }))] } } });
+  // traduit les titres de sections et les libellés d'options d'un schéma ha-form (écrits en français)
+  const locSchema = (sc) => (sc || []).map((x) => { const o = { ...x }; if (o.title) o.title = _(o.title); if (o.schema) o.schema = locSchema(o.schema);
+    if (o.selector && o.selector.select && o.name !== "language") o.selector = { ...o.selector, select: { ...o.selector.select, options: (o.selector.select.options || []).map((op) => (typeof op === "string" ? op : { ...op, label: _(op.label) })) } };
+    if (o.name === "language" && o.selector && o.selector.select) o.selector = { ...o.selector, select: { ...o.selector.select, options: o.selector.select.options.map((op) => (op.value ? op : { ...op, label: _("Automatique (profil)") })) } };
+    return o; });
+  const VERSION = "1.2.0";
   const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-  const DAY_S = { mon: "Lun", tue: "Mar", wed: "Mer", thu: "Jeu", fri: "Ven", sat: "Sam", sun: "Dim" };
-  const DAY_L = { mon: "Lundi", tue: "Mardi", wed: "Mercredi", thu: "Jeudi", fri: "Vendredi", sat: "Samedi", sun: "Dimanche" };
+const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof v === "string" ? _(v) : v && typeof v === "object" ? _T(v) : v; } });
+  const DAY_S_RAW = { mon: _("Lun"), tue: _("Mar"), wed: _("Mer"), thu: _("Jeu"), fri: _("Ven"), sat: _("Sam"), sun: _("Dim") };
+  const DAY_L_RAW = { mon: _("Lundi"), tue: _("Mardi"), wed: _("Mercredi"), thu: _("Jeudi"), fri: _("Vendredi"), sat: _("Samedi"), sun: _("Dimanche") };
+  const DAY_S = _T(DAY_S_RAW), DAY_L = _T(DAY_L_RAW);
   const SNAP = 15;   // pas des boutons −/+
   const DRAG = 5;    // pas du glissement des poignées
   const GAP = 5;     // écart minimal entre deux créneaux
@@ -21,27 +239,30 @@
   const fmtT = (v, d = 1) => (v == null || isNaN(v) ? "–" : Number(v).toFixed(d).replace(".", ","));
 
   // modes et options d'appareil
-  const HVAC = {
-    heat: { l: "Chauffage", s: "Chauffe", i: "mdi:fire" },
-    cool: { l: "Climatisation", s: "Clim", i: "mdi:snowflake" },
-    heat_cool: { l: "Chaud / froid", s: "Chaud/froid", i: "mdi:sun-snowflake-variant" },
-    auto: { l: "Automatique", s: "Auto", i: "mdi:thermostat-auto" },
-    dry: { l: "Déshumidification", s: "Déshum.", i: "mdi:water-percent" },
-    fan_only: { l: "Ventilation seule", s: "Ventilation", i: "mdi:fan" },
+  const HVAC_RAW = {
+    heat: { l: _("Chauffage"), s: _("Chauffe"), i: "mdi:fire" },
+    cool: { l: _("Climatisation"), s: _("Clim"), i: "mdi:snowflake" },
+    heat_cool: { l: _("Chaud / froid"), s: _("Chaud/froid"), i: "mdi:sun-snowflake-variant" },
+    auto: { l: _("Automatique"), s: _("Auto"), i: "mdi:thermostat-auto" },
+    dry: { l: _("Déshumidification"), s: _("Déshum."), i: "mdi:water-percent" },
+    fan_only: { l: _("Ventilation seule"), s: _("Ventilation"), i: "mdi:fan" },
   };
+  const HVAC = _T(HVAC_RAW);
   const HVAC_ORDER = ["heat", "cool", "heat_cool", "auto", "dry", "fan_only"];
-  const OPTS = [
-    { k: "preset", attr: "preset_modes", l: "Préréglage", i: "mdi:tune-variant" },
-    { k: "fan", attr: "fan_modes", l: "Ventilation", i: "mdi:fan" },
-    { k: "swing", attr: "swing_modes", l: "Oscillation verticale", i: "mdi:arrow-up-down" },
-    { k: "hswing", attr: "swing_horizontal_modes", l: "Oscillation horizontale", i: "mdi:arrow-left-right" },
+  const OPTS_RAW = [
+    { k: "preset", attr: "preset_modes", l: _("Préréglage"), i: "mdi:tune-variant" },
+    { k: "fan", attr: "fan_modes", l: _("Ventilation"), i: "mdi:fan" },
+    { k: "swing", attr: "swing_modes", l: _("Oscillation verticale"), i: "mdi:arrow-up-down" },
+    { k: "hswing", attr: "swing_horizontal_modes", l: _("Oscillation horizontale"), i: "mdi:arrow-left-right" },
   ];
-  const VAL_L = {
-    auto: "Auto", quiet: "Silencieux", silence: "Silencieux", low: "Faible", medium: "Moyen", high: "Fort",
-    off: "Arrêt", stop: "Arrêt", on: "Balayage", swing: "Balayage", both: "Les deux", vertical: "Vertical", horizontal: "Horizontal",
-    "comfort airflow": "Flux confort", windnice: "Flux confort", none: "Aucun", away: "Absence", boost: "Boost", eco: "Éco", comfort: "Confort", sleep: "Nuit", home: "Maison", activity: "Activité",
+  const OPTS = _T(OPTS_RAW);
+  const VAL_L_RAW = {
+    auto: _("Auto"), quiet: _("Silencieux"), silence: _("Silencieux"), low: _("Faible"), medium: _("Moyen"), high: _("Fort"),
+    off: _("Arrêt"), stop: _("Arrêt"), on: _("Balayage"), swing: _("Balayage"), both: _("Les deux"), vertical: _("Vertical"), horizontal: _("Horizontal"),
+    "comfort airflow": _("Flux confort"), windnice: _("Flux confort"), none: _("Aucun"), away: _("Absence"), boost: _("Boost"), eco: _("Éco"), comfort: _("Confort"), sleep: _("Nuit"), home: _("Maison"), activity: _("Activité"),
   };
-  const valL = (k, v) => { const x = String(v); if (k === "fan" && /^\d+$/.test(x)) return "Vitesse " + x; return VAL_L[x.toLowerCase()] || x.charAt(0).toUpperCase() + x.slice(1); };
+  const VAL_L = _T(VAL_L_RAW);
+  const valL = (k, v) => { const x = String(v); if (k === "fan" && /^\d+$/.test(x)) return _("Vitesse ") + x; return VAL_L[x.toLowerCase()] || x.charAt(0).toUpperCase() + x.slice(1); };
   const slotOn = (s) => !!s && !s.off;
   // couleur d'un créneau / d'un état selon le mode
   const modeColor = (hvac, t, cool) => {
@@ -54,12 +275,12 @@
   const haptic = (t = "light") => window.dispatchEvent(new CustomEvent("haptic", { detail: t }));
   const todayKey = () => DAYS[(new Date().getDay() + 6) % 7];
   const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
-  const timeOf = (iso) => { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); };
+  const timeOf = (iso) => { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleTimeString(NUMLOC, { hour: "2-digit", minute: "2-digit" }); };
   const dayOf = (iso) => {
     if (!iso) return "";
     const d = new Date(iso), n = new Date();
     const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(n.getFullYear(), n.getMonth(), n.getDate())) / 86400000);
-    return diff === 0 ? "" : diff === 1 ? "demain " : d.toLocaleDateString("fr-FR", { weekday: "long" }) + " ";
+    return diff === 0 ? "" : diff === 1 ? _("demain ") : d.toLocaleDateString(NUMLOC, { weekday: "long" }) + " ";
   };
   const left = (iso) => { const s = (new Date(iso) - Date.now()) / 60000; return s <= 0 ? "" : s < 60 ? `${Math.ceil(s)} min` : `${Math.floor(s / 60)} h ${String(Math.round(s % 60)).padStart(2, "0")}`; };
 
@@ -106,7 +327,7 @@
       const c = s.off ? "" : modeColor(s.hvac, s.temp, cool);
       const w = ((s.to - s.from) / 1440) * 100;
       const sel = opts.sel === s.idx && s.idx >= 0 ? " sel" : "";
-      const txt = opts.big ? (opts.label ? opts.label(s) : s.off ? "Arrêt" : s.hvac === "fan_only" ? "Ventil." : fmtT(s.temp) + "°") : "";
+      const txt = opts.big ? (opts.label ? opts.label(s) : s.off ? _("Arrêt") : s.hvac === "fan_only" ? _("Ventil.") : fmtT(s.temp) + "°") : "";
       return `<span class="seg${s.off ? " off" : ""}${sel}" data-idx="${s.idx}"${txt ? ` title="${esc(txt)}"` : ""} style="left:${(s.from / 1440) * 100}%;width:${w}%;${c ? `--sc:${c}` : ""};--d:${i * 40}ms">${opts.big && w > 2.5 ? `<b>${esc(txt)}</b>` : ""}</span>`;
     }).join("")}${now != null ? `<i class="now" style="left:${(now / 1440) * 100}%"></i>` : ""}</div>`;
   };
@@ -127,6 +348,7 @@
     set hass(hass) {
       const first = !this._hass;
       this._hass = hass;
+      { const _l = setLang(hass, this._config); if (this._lang && _l !== this._lang) this._render(); this._lang = _l; }
       this._tone();
       if (first) this._load();
       if (hass && hass.connection !== this._conn) { this._conn = hass.connection; this._unsub && this._unsub(); this._unsub = null; this._subscribe(); }
@@ -166,7 +388,7 @@
         this._data = await this._hass.callWS({ type: "climat_holm/data" });
         this._error = null;
       } catch (e) {
-        this._error = e.code === "unknown_command" ? "L'intégration Climat HOLM n'est pas installée." : e.message || "Erreur";
+        this._error = e.code === "unknown_command" ? _("L'intégration Climat HOLM n'est pas installée.") : e.message || _("Erreur");
       }
       this._render();
     }
@@ -177,7 +399,7 @@
         await this._load();
         return r;
       } catch (e) {
-        this._toast(e.message || "Action impossible", true);
+        this._toast(e.message || _("Action impossible"), true);
         throw e;
       }
     }
@@ -222,8 +444,8 @@
     }
     // texte court d'une consigne : « 21,0° », « Clim 24,0° », « Ventilation », « Arrêt »
     _val(hvac, temp, off) {
-      if (off || hvac === "off") return "Arrêt";
-      if (hvac === "fan_only") return "Ventilation";
+      if (off || hvac === "off") return _("Arrêt");
+      if (hvac === "fan_only") return _("Ventilation");
       const season = this._cool ? "cool" : "heat";
       const pre = hvac && hvac !== season && HVAC[hvac] ? HVAC[hvac].s + " " : "";
       return pre + (temp != null ? fmtT(temp) + "°" : "").trim() || pre.trim();
@@ -248,6 +470,7 @@
     _render() {
       const r = this.shadowRoot;
       if (!r || !this._config) return;
+      setLang(this._hass, this._config);
       if (!this._shell) {
         r.innerHTML = `<style>${HolmClimatCard.css()}</style><ha-card><div class="glow"></div><div id="v" class="view"></div><div class="toast" id="toast"></div></ha-card>`;
         this._shell = true;
@@ -273,52 +496,52 @@
     // ---------- accueil
     _homeView() {
       const d = this._data, g = d.global, rooms = this._rooms();
-      const title = this._config.title || (g.season === "cool" ? "Climatisation" : "Chauffage");
+      const title = this._config.title || (g.season === "cool" ? _("Climatisation") : _("Chauffage"));
       const heatingN = rooms.filter((r) => r.state.action === "heating" || r.state.action === "cooling").length;
-      const sub = !g.running ? "Programmation en pause — Climat HOLM ne pilote rien"
-        : g.all_off ? "Tout est arrêté"
-          : g.away ? `Absence${g.away_until ? " jusqu'à " + dayOf(g.away_until) + timeOf(g.away_until) : ""}`
-            : `Profil ${esc(g.profile)}${heatingN ? ` · ${heatingN} pièce${heatingN > 1 ? "s" : ""} en ${g.season === "cool" ? "refroidissement" : "chauffe"}` : ""}`;
+      const sub = !g.running ? _("Programmation en pause — Climat HOLM ne pilote rien")
+        : g.all_off ? _("Tout est arrêté")
+          : g.away ? _("Absence") + (g.away_until ? _(" jusqu'à {t}", { t: dayOf(g.away_until) + timeOf(g.away_until) }) : "")
+            : `${_("Profil {p}", { p: esc(g.profile) })}${heatingN ? ` · ${_(g.season === "cool" ? (heatingN > 1 ? _("{n} pièces en refroidissement") : _("{n} pièce en refroidissement")) : (heatingN > 1 ? _("{n} pièces en chauffe") : _("{n} pièce en chauffe")), { n: heatingN })}` : ""}`;
       return `
         <div class="hd">
           <div class="hic ${g.season === "cool" ? "cool" : "heat"}${g.running && heatingN ? " live" : ""}"><ha-icon icon="${g.season === "cool" ? "mdi:snowflake" : "mdi:fire"}"></ha-icon></div>
           <div class="ht"><b>${esc(title)}</b><small>${sub}</small></div>
-          <button class="ibtn" data-a="settings" title="Réglages"><ha-icon icon="mdi:cog-outline"></ha-icon></button>
-          <button class="tgl${g.running ? " on" : ""}" data-a="running" title="${g.running ? "Mettre en pause" : "Activer la programmation"}"><i></i></button>
+          <button class="ibtn" data-a="settings" title="${_("Réglages")}"><ha-icon icon="mdi:cog-outline"></ha-icon></button>
+          <button class="tgl${g.running ? " on" : ""}" data-a="running" title="${g.running ? _("Mettre en pause") : _("Activer la programmation")}"><i></i></button>
         </div>
         <div class="chips">
-          <div class="seg2"><button data-a="season" data-v="heat" class="${g.season !== "cool" ? "on heat" : ""}"><ha-icon icon="mdi:fire"></ha-icon>Chauffage</button><button data-a="season" data-v="cool" class="${g.season === "cool" ? "on cool" : ""}"><ha-icon icon="mdi:snowflake"></ha-icon>Clim</button></div>
-          <button class="chip${g.away ? " on warn" : ""}" data-a="away"><ha-icon icon="mdi:home-export-outline"></ha-icon>Absence</button>
-          <button class="chip${g.all_off ? " on bad" : ""}" data-a="alloff"><ha-icon icon="mdi:power"></ha-icon>Tout arrêter</button>
+          <div class="seg2"><button data-a="season" data-v="heat" class="${g.season !== "cool" ? "on heat" : ""}"><ha-icon icon="mdi:fire"></ha-icon>${_("Chauffage")}</button><button data-a="season" data-v="cool" class="${g.season === "cool" ? "on cool" : ""}"><ha-icon icon="mdi:snowflake"></ha-icon>${_("Clim")}</button></div>
+          <button class="chip${g.away ? " on warn" : ""}" data-a="away"><ha-icon icon="mdi:home-export-outline"></ha-icon>${_("Absence")}</button>
+          <button class="chip${g.all_off ? " on bad" : ""}" data-a="alloff"><ha-icon icon="mdi:power"></ha-icon>${_("Tout arrêter")}</button>
         </div>
         <div class="profiles">
           <ha-icon icon="mdi:calendar-clock"></ha-icon>
           ${d.profiles.map((p) => `<button class="pchip${p === g.profile ? " on" : ""}" data-a="profile" data-v="${esc(p)}">${esc(p)}</button>`).join("")}
-          ${this._pedit ? `<span class="pin"><input id="pname" placeholder="${this._pedit.op === "rename" ? esc(this._pedit.name) : "Nouveau profil"}" value="${this._pedit.op === "rename" ? esc(this._pedit.name) : ""}" maxlength="30"><button class="mini" data-a="pok"><ha-icon icon="mdi:check"></ha-icon></button><button class="mini" data-a="pcancel"><ha-icon icon="mdi:close"></ha-icon></button></span>`
-          : `<button class="pchip add" data-a="padd" title="Nouveau profil (copie du profil actif)"><ha-icon icon="mdi:plus"></ha-icon></button>${d.profiles.length ? `<button class="pchip add" data-a="pmenu" title="Renommer / supprimer le profil actif"><ha-icon icon="mdi:pencil-outline"></ha-icon></button>` : ""}`}
+          ${this._pedit ? `<span class="pin"><input id="pname" placeholder="${this._pedit.op === "rename" ? esc(this._pedit.name) : _("Nouveau profil")}" value="${this._pedit.op === "rename" ? esc(this._pedit.name) : ""}" maxlength="30"><button class="mini" data-a="pok"><ha-icon icon="mdi:check"></ha-icon></button><button class="mini" data-a="pcancel"><ha-icon icon="mdi:close"></ha-icon></button></span>`
+          : `<button class="pchip add" data-a="padd" title="${_("Nouveau profil (copie du profil actif)")}"><ha-icon icon="mdi:plus"></ha-icon></button>${d.profiles.length ? `<button class="pchip add" data-a="pmenu" title="${_("Renommer / supprimer le profil actif")}"><ha-icon icon="mdi:pencil-outline"></ha-icon></button>` : ""}`}
         </div>
-        ${this._pmenu ? `<div class="pmenu"><span>Profil « ${esc(g.profile)} »</span><button class="mini txt" data-a="prename">Renommer</button><button class="mini txt danger" data-a="pdelete"${d.profiles.length < 2 ? " disabled" : ""}>Supprimer</button><button class="mini" data-a="pmenu"><ha-icon icon="mdi:close"></ha-icon></button></div>` : ""}
-        ${rooms.length ? `<div class="grid">${rooms.map((room, i) => this._tile(room, i)).join("")}</div>` : this._empty("mdi:home-thermometer-outline", "Aucune pièce pour l'instant", d.has_climate_scheduler ? `<button class="pbtn" data-a="import">Importer depuis Climate Scheduler</button>` : "")}
-        <button class="add" data-a="new"><ha-icon icon="mdi:plus"></ha-icon>Ajouter une pièce</button>`;
+        ${this._pmenu ? `<div class="pmenu"><span>${_("Profil « {p} »", { p: esc(g.profile) })}</span><button class="mini txt" data-a="prename">${_("Renommer")}</button><button class="mini txt danger" data-a="pdelete"${d.profiles.length < 2 ? " disabled" : ""}>${_("Supprimer")}</button><button class="mini" data-a="pmenu"><ha-icon icon="mdi:close"></ha-icon></button></div>` : ""}
+        ${rooms.length ? `<div class="grid">${rooms.map((room, i) => this._tile(room, i)).join("")}</div>` : this._empty("mdi:home-thermometer-outline", _("Aucune pièce pour l'instant"), d.has_climate_scheduler ? `<button class="pbtn" data-a="import">${_("Importer depuis Climate Scheduler")}</button>` : "")}
+        <button class="add" data-a="new"><ha-icon icon="mdi:plus"></ha-icon>${_("Ajouter une pièce")}</button>`;
     }
 
     _status(room) {
       const s = room.state, g = this._data.global;
       const at = (iso) => (iso ? `${dayOf(iso)}${timeOf(iso)}` : "");
       switch (s.source) {
-        case "paused": return { t: "Programmation en pause", i: "mdi:pause-circle-outline", c: "mute" };
-        case "all_off": return { t: "Tout arrêté", i: "mdi:power", c: "mute" };
-        case "window": return { t: "Fenêtre ouverte — arrêt", i: "mdi:window-open-variant", c: "warn" };
-        case "room_off": return { t: "Arrêt", i: "mdi:power", c: "mute" };
-        case "boost": return { t: `Boost · encore ${left(s.until)}`, i: "mdi:rocket-launch-outline", c: "hot" };
-        case "away": return { t: `Absence${s.temp != null ? " · " + fmtT(s.temp) + "°" : ""}${s.until ? " jusqu'à " + at(s.until) : ""}`, i: "mdi:home-export-outline", c: "warn" };
-        case "manual": return { t: `Manuel · ${this._val(s.hvac, s.temp)}`, i: "mdi:hand-back-right-outline", c: "" };
-        case "override": return { t: `${this._val(s.hvac, s.temp)} jusqu'à ${at(s.until)} (dérogation)`, i: "mdi:timer-sand", c: "hot" };
+        case "paused": return { t: _("Programmation en pause"), i: "mdi:pause-circle-outline", c: "mute" };
+        case "all_off": return { t: _("Tout arrêté"), i: "mdi:power", c: "mute" };
+        case "window": return { t: _("Fenêtre ouverte — arrêt"), i: "mdi:window-open-variant", c: "warn" };
+        case "room_off": return { t: _("Arrêt"), i: "mdi:power", c: "mute" };
+        case "boost": return { t: _("Boost · encore {t}", { t: left(s.until) }), i: "mdi:rocket-launch-outline", c: "hot" };
+        case "away": return { t: `${_("Absence")}${s.temp != null ? " · " + fmtT(s.temp) + "°" : ""}${s.until ? _(" jusqu'à {t}", { t: at(s.until) }) : ""}`, i: "mdi:home-export-outline", c: "warn" };
+        case "manual": return { t: _("Manuel · {v}", { v: this._val(s.hvac, s.temp) }), i: "mdi:hand-back-right-outline", c: "" };
+        case "override": return { t: _("{v} jusqu'à {t} (dérogation)", { v: this._val(s.hvac, s.temp), t: at(s.until) }), i: "mdi:timer-sand", c: "hot" };
         default: {
           const now = this._val(s.hvac, s.temp);
           if (s.next_at) {
-            const nxt = s.next_off ? "arrêt" : this._val(s.next_hvac, s.next_temp);
-            return { t: `${now} · puis ${nxt} à ${at(s.next_at)}`, i: "mdi:calendar-clock", c: "" };
+            const nxt = s.next_off ? _("arrêt") : this._val(s.next_hvac, s.next_temp);
+            return { t: _("{a} · puis {b} à {t}", { a: now, b: nxt, t: at(s.next_at) }), i: "mdi:calendar-clock", c: "" };
           }
           return { t: now, i: "mdi:calendar-clock", c: "" };
         }
@@ -332,7 +555,7 @@
       const col = off ? "rgb(148,163,184)" : modeColor(s.hvac, s.temp, cool);
       return `<button class="tile ${act}${off ? " isoff" : ""}" data-a="room" data-id="${room.id}" style="--tc:${col};--i:${i}">
         <div class="tt"><ha-icon icon="${esc(room.icon || "mdi:radiator")}"></ha-icon><span>${esc(room.name)}</span>${act ? `<ha-icon class="fx" icon="${act === "heating" ? "mdi:fire" : "mdi:snowflake"}"></ha-icon>` : ""}</div>
-        <div class="tv"><span class="cur">${fmtT(s.current)}<small>°</small></span>${!off ? `<span class="tgt"><ha-icon icon="${HVAC[s.hvac] && s.hvac !== (cool ? "cool" : "heat") ? HVAC[s.hvac].i : "mdi:arrow-right-thin"}"></ha-icon>${s.temp != null ? fmtT(s.temp) + "°" : s.hvac === "fan_only" ? "Ventil." : esc(HVAC[s.hvac] ? HVAC[s.hvac].s : "")}</span>` : `<span class="tgt off"><ha-icon icon="mdi:power"></ha-icon>Arrêt</span>`}</div>
+        <div class="tv"><span class="cur">${fmtT(s.current)}<small>°</small></span>${!off ? `<span class="tgt"><ha-icon icon="${HVAC[s.hvac] && s.hvac !== (cool ? "cool" : "heat") ? HVAC[s.hvac].i : "mdi:arrow-right-thin"}"></ha-icon>${s.temp != null ? fmtT(s.temp) + "°" : s.hvac === "fan_only" ? _("Ventil.") : esc(HVAC[s.hvac] ? HVAC[s.hvac].s : "")}</span>` : `<span class="tgt off"><ha-icon icon="mdi:power"></ha-icon>${_("Arrêt")}</span>`}</div>
         <div class="ts ${st.c}"><ha-icon icon="${st.i}"></ha-icon><span>${esc(st.t)}</span></div>
         ${barHTML(this._week(room), todayKey(), cool)}
       </button>`;
@@ -351,43 +574,43 @@
       const caps = this._caps(room);
       const optsTxt = !off ? this._optsTxt(s.opts, caps) : "";
       return `
-        <div class="nav"><button class="ibtn" data-a="home"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b><ha-icon icon="${esc(room.icon || "mdi:radiator")}"></ha-icon>${esc(room.name)}</b><button class="ibtn" data-a="edit" title="Réglages de la pièce"><ha-icon icon="mdi:cog-outline"></ha-icon></button></div>
+        <div class="nav"><button class="ibtn" data-a="home"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b><ha-icon icon="${esc(room.icon || "mdi:radiator")}"></ha-icon>${esc(room.name)}</b><button class="ibtn" data-a="edit" title="${_("Réglages de la pièce")}"><ha-icon icon="mdi:cog-outline"></ha-icon></button></div>
         <div class="thermo ${act}" style="--tc:${off ? "rgb(148,163,184)" : modeColor(s.hvac, s.temp, cool)}">
           <div class="ring"><svg viewBox="0 0 120 120"><circle class="rt" cx="60" cy="60" r="52"/><circle class="rv" cx="60" cy="60" r="52" style="stroke-dasharray:${Math.max(4, Math.min(1, ((s.current ?? 15) - 10) / 20) * 327)} 327"/></svg>
-            <div class="rc"><small>Actuelle</small><span>${fmtT(s.current)}°</span>${act ? `<em><ha-icon icon="${act === "heating" ? "mdi:fire" : "mdi:snowflake"}"></ha-icon>${act === "heating" ? "Chauffe" : "Refroidit"}</em>` : ""}</div>
+            <div class="rc"><small>${_("Actuelle")}</small><span>${fmtT(s.current)}°</span>${act ? `<em><ha-icon icon="${act === "heating" ? "mdi:fire" : "mdi:snowflake"}"></ha-icon>${act === "heating" ? _("Chauffe") : _("Refroidit")}</em>` : ""}</div>
           </div>
           <div class="setp">
-            <small>Consigne</small>
-            <div class="pm"><button class="rbtn" data-a="tminus"${room.mode === "off" || noTemp ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span class="big">${noTemp ? "Ventil." : off && room.mode !== "manual" ? "Arrêt" : fmtT(tgt) + "°"}</span><button class="rbtn" data-a="tplus"${room.mode === "off" || noTemp ? " disabled" : ""}><ha-icon icon="mdi:plus"></ha-icon></button></div>
+            <small>${_("Consigne")}</small>
+            <div class="pm"><button class="rbtn" data-a="tminus"${room.mode === "off" || noTemp ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span class="big">${noTemp ? _("Ventil.") : off && room.mode !== "manual" ? _("Arrêt") : fmtT(tgt) + "°"}</span><button class="rbtn" data-a="tplus"${room.mode === "off" || noTemp ? " disabled" : ""}><ha-icon icon="mdi:plus"></ha-icon></button></div>
             <div class="ts ${st.c}"><ha-icon icon="${st.i}"></ha-icon><span>${esc(st.t)}</span></div>
             ${optsTxt ? `<div class="ts mute"><ha-icon icon="mdi:tune-variant"></ha-icon><span>${esc(optsTxt)}</span></div>` : ""}
           </div>
         </div>
-        <div class="seg3">${[["auto", "mdi:calendar-clock", "Auto"], ["manual", "mdi:hand-back-right-outline", "Manuel"], ["off", "mdi:power", "Arrêt"]].map(([k, ic, l]) => `<button data-a="mode" data-v="${k}" class="${room.mode === k ? "on" : ""}"><ha-icon icon="${ic}"></ha-icon>${l}</button>`).join("")}</div>
-        ${room.mode === "manual" ? `<div class="sec"><ha-icon icon="mdi:hand-back-right-outline"></ha-icon>Mode manuel</div>${this._modePicker(caps, room.manual_hvac, "mhvac")}${this._optPicker(caps, room.manual_opts || {}, "mopt")}` : ""}
+        <div class="seg3">${[["auto", "mdi:calendar-clock", _("Auto")], ["manual", "mdi:hand-back-right-outline", _("Manuel")], ["off", "mdi:power", _("Arrêt")]].map(([k, ic, l]) => `<button data-a="mode" data-v="${k}" class="${room.mode === k ? "on" : ""}"><ha-icon icon="${ic}"></ha-icon>${l}</button>`).join("")}</div>
+        ${room.mode === "manual" ? `<div class="sec"><ha-icon icon="mdi:hand-back-right-outline"></ha-icon>${_("Mode manuel")}</div>${this._modePicker(caps, room.manual_hvac, "mhvac")}${this._optPicker(caps, room.manual_opts || {}, "mopt")}` : ""}
         <div class="acts">
-          ${s.source === "boost" ? `<button class="act on hot" data-a="cancel"><ha-icon icon="mdi:rocket-launch"></ha-icon>Arrêter le boost</button>` : `<button class="act" data-a="boost"${room.mode === "off" ? " disabled" : ""}><ha-icon icon="mdi:rocket-launch-outline"></ha-icon>Boost ${this._data.settings.boost_minutes} min</button>`}
-          <button class="act" data-a="next"${room.mode !== "auto" ? " disabled" : ""}><ha-icon icon="mdi:skip-next-outline"></ha-icon>Créneau suivant</button>
-          ${special && s.source !== "boost" ? `<button class="act" data-a="cancel"><ha-icon icon="mdi:backup-restore"></ha-icon>Revenir au planning</button>` : ""}
+          ${s.source === "boost" ? `<button class="act on hot" data-a="cancel"><ha-icon icon="mdi:rocket-launch"></ha-icon>${_("Arrêter le boost")}</button>` : `<button class="act" data-a="boost"${room.mode === "off" ? " disabled" : ""}><ha-icon icon="mdi:rocket-launch-outline"></ha-icon>${_("Boost {n} min", { n: this._data.settings.boost_minutes })}</button>`}
+          <button class="act" data-a="next"${room.mode !== "auto" ? " disabled" : ""}><ha-icon icon="mdi:skip-next-outline"></ha-icon>${_("Créneau suivant")}</button>
+          ${special && s.source !== "boost" ? `<button class="act" data-a="cancel"><ha-icon icon="mdi:backup-restore"></ha-icon>${_("Revenir au planning")}</button>` : ""}
         </div>
-        <div class="sec"><ha-icon icon="mdi:calendar-week"></ha-icon>Planning · profil ${esc(g.profile)}<small>Touchez un jour pour le modifier</small></div>
+        <div class="sec"><ha-icon icon="mdi:calendar-week"></ha-icon>${_("Planning · profil {p}", { p: esc(g.profile) })}<small>${_("Touchez un jour pour le modifier")}</small></div>
         <div class="week">${DAYS.map((d, i) => `<button class="wrow${d === todayKey() ? " today" : ""}" data-a="day" data-day="${d}" style="--i:${i}"><span>${DAY_S[d]}</span>${barHTML(week, d, cool)}<ha-icon icon="mdi:chevron-right"></ha-icon></button>`).join("")}
           <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
         </div>
-        ${(room.windows || []).length || room.temp_sensor ? `<div class="meta">${room.temp_sensor ? `<span><ha-icon icon="mdi:thermometer"></ha-icon>Sonde : ${esc(this._name(room.temp_sensor))}</span>` : ""}${(room.windows || []).length ? `<span><ha-icon icon="mdi:window-closed-variant"></ha-icon>${room.windows.length} ouvrant${room.windows.length > 1 ? "s" : ""} surveillé${room.windows.length > 1 ? "s" : ""}</span>` : ""}</div>` : ""}`;
+        ${(room.windows || []).length || room.temp_sensor ? `<div class="meta">${room.temp_sensor ? `<span><ha-icon icon="mdi:thermometer"></ha-icon>${_("Sonde : {n}", { n: esc(this._name(room.temp_sensor)) })}</span>` : ""}${(room.windows || []).length ? `<span><ha-icon icon="mdi:window-closed-variant"></ha-icon>${_(room.windows.length > 1 ? _("{n} ouvrants surveillés") : _("{n} ouvrant surveillé"), { n: room.windows.length })}</span>` : ""}</div>` : ""}`;
     }
     // choix du mode (null = celui de la saison)
     _modePicker(caps, cur, act) {
       if (caps.hvac.length < 2) return "";
       const season = this._cool ? "cool" : "heat";
-      return `<div class="opt"><small><ha-icon icon="mdi:thermostat"></ha-icon>Mode</small><div class="ochips">
-        <button class="pchip${!cur ? " on" : ""}" data-a="${act}" data-v="">Saison (${HVAC[season].s})</button>
+      return `<div class="opt"><small><ha-icon icon="mdi:thermostat"></ha-icon>${_("Mode")}</small><div class="ochips">
+        <button class="pchip${!cur ? " on" : ""}" data-a="${act}" data-v="">${_("Saison ({s})", { s: HVAC[season].s })}</button>
         ${caps.hvac.map((m) => `<button class="pchip${cur === m ? " on" : ""}" data-a="${act}" data-v="${m}"><ha-icon icon="${HVAC[m].i}"></ha-icon>${HVAC[m].s}</button>`).join("")}
       </div></div>`;
     }
     _optPicker(caps, cur, act) {
       return OPTS.filter((o) => caps.opts[o.k].length).map((o) => `<div class="opt"><small><ha-icon icon="${o.i}"></ha-icon>${o.l}</small><div class="ochips">
-        <button class="pchip${!cur[o.k] ? " on" : ""}" data-a="${act}" data-k="${o.k}" data-v="">Par défaut</button>
+        <button class="pchip${!cur[o.k] ? " on" : ""}" data-a="${act}" data-k="${o.k}" data-v="">${_("Par défaut")}</button>
         ${caps.opts[o.k].map((v) => `<button class="pchip${cur[o.k] === v ? " on" : ""}" data-a="${act}" data-k="${o.k}" data-v="${esc(v)}">${esc(this._vl(caps, o.k, v))}</button>`).join("")}
       </div></div>`).join("");
     }
@@ -406,22 +629,22 @@
       const caps = this._caps(room);
       const sNoT = s && s.hvac === "fan_only";
       return `
-        <div class="nav"><button class="ibtn" data-a="back-room"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${DAY_L[day]}<small>${esc(room.name)} · ${esc(g.profile)}</small></b><button class="pbtn sm${e.dirty ? "" : " ghost"}" data-a="save">Enregistrer</button></div>
+        <div class="nav"><button class="ibtn" data-a="back-room"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${DAY_L[day]}<small>${esc(room.name)} · ${esc(g.profile)}</small></b><button class="pbtn sm${e.dirty ? "" : " ghost"}" data-a="save">${_("Enregistrer")}</button></div>
         <div class="daynav">${DAYS.map((d) => `<button class="dn${d === day ? " on" : ""}${JSON.stringify(e.week[d]) !== JSON.stringify(e.orig[d]) ? " mod" : ""}" data-a="goday" data-day="${d}">${DAY_S[d]}</button>`).join("")}</div>
         <div class="dbar" id="dbar">${barHTML(e.week, day, cool, { big: true, sel, label: (sg) => this._segLabel(sg, caps, cool) })}${slots.map((sl, i) => `<span class="handle${i === sel ? " on" : ""}" data-h="${i}" style="left:${(mins(sl.t) / 1440) * 100}%"><i></i><em>${sl.t}</em></span>`).join("")}</div>
         <div class="hours big"><span>0h</span><span>3h</span><span>6h</span><span>9h</span><span>12h</span><span>15h</span><span>18h</span><span>21h</span><span>24h</span></div>
         ${s ? `<div class="slot">
-          <div class="snav"><button class="rbtn sm" data-a="sprev"${sel > 0 ? "" : " disabled"} title="Créneau précédent (←)"><ha-icon icon="mdi:chevron-left"></ha-icon></button><span>Créneau ${sel + 1} / ${slots.length}<small>${esc(this._segLabel({ off: !!s.off, hvac: s.hvac, temp: s.temp, o: s.off ? null : s }, caps, cool))}</small></span><button class="rbtn sm" data-a="snext"${sel < slots.length - 1 ? "" : " disabled"} title="Créneau suivant (→)"><ha-icon icon="mdi:chevron-right"></ha-icon></button></div>
-          <div class="sf"><small>Début</small><div class="pm"><button class="rbtn sm" data-a="st-" ><ha-icon icon="mdi:minus"></ha-icon></button><span>${s.t}</span><button class="rbtn sm" data-a="st+"><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
-          <div class="sf"><small>Fin</small><div class="pm"><button class="rbtn sm" data-a="en-"${sel === slots.length - 1 && s.off ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span>${sel < slots.length - 1 ? slots[sel + 1].t : "24:00"}</span><button class="rbtn sm" data-a="en+"${sel < slots.length - 1 ? "" : " disabled"}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
-          <div class="sf"><small>${s.off ? "Arrêt" : sNoT ? "Sans consigne" : "Température"}</small><div class="pm"><button class="rbtn sm" data-a="sv-"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span style="color:${s.off || sNoT ? "inherit" : modeColor(s.hvac, s.temp, cool)}">${s.off || sNoT ? "—" : fmtT(s.temp) + "°"}</span><button class="rbtn sm" data-a="sv+"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
+          <div class="snav"><button class="rbtn sm" data-a="sprev"${sel > 0 ? "" : " disabled"} title="${_("Créneau précédent (←)")}"><ha-icon icon="mdi:chevron-left"></ha-icon></button><span>${_("Créneau {i} / {n}", { i: sel + 1, n: slots.length })}<small>${esc(this._segLabel({ off: !!s.off, hvac: s.hvac, temp: s.temp, o: s.off ? null : s }, caps, cool))}</small></span><button class="rbtn sm" data-a="snext"${sel < slots.length - 1 ? "" : " disabled"} title="${_("Créneau suivant (→)")}"><ha-icon icon="mdi:chevron-right"></ha-icon></button></div>
+          <div class="sf"><small>${_("Début")}</small><div class="pm"><button class="rbtn sm" data-a="st-" ><ha-icon icon="mdi:minus"></ha-icon></button><span>${s.t}</span><button class="rbtn sm" data-a="st+"><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
+          <div class="sf"><small>${_("Fin")}</small><div class="pm"><button class="rbtn sm" data-a="en-"${sel === slots.length - 1 && s.off ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span>${sel < slots.length - 1 ? slots[sel + 1].t : "24:00"}</span><button class="rbtn sm" data-a="en+"${sel < slots.length - 1 ? "" : " disabled"}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
+          <div class="sf"><small>${s.off ? _("Arrêt") : sNoT ? _("Sans consigne") : _("Température")}</small><div class="pm"><button class="rbtn sm" data-a="sv-"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:minus"></ha-icon></button><span style="color:${s.off || sNoT ? "inherit" : modeColor(s.hvac, s.temp, cool)}">${s.off || sNoT ? "—" : fmtT(s.temp) + "°"}</span><button class="rbtn sm" data-a="sv+"${s.off || sNoT ? " disabled" : ""}><ha-icon icon="mdi:plus"></ha-icon></button></div></div>
           ${!s.off ? `<div class="sopts">${this._modePicker(caps, s.hvac || null, "shvac")}${this._optPicker(caps, s, "sopt")}</div>` : ""}
-          <div class="sa"><button class="act${s.off ? " on" : ""}" data-a="soff"><ha-icon icon="mdi:power"></ha-icon>${s.off ? "Rallumer" : "Arrêt"}</button><button class="act danger" data-a="sdel"><ha-icon icon="mdi:delete-outline"></ha-icon>Supprimer</button></div>
-        </div>` : `<div class="hint"><ha-icon icon="mdi:gesture-tap"></ha-icon>Touchez une plage de la frise pour la régler, ou faites glisser les poignées pour changer les horaires.${slots.length ? `<button class="pchip" data-a="sfirst">Parcourir les créneaux</button>` : ""}</div>`}
-        <button class="add" data-a="sadd"><ha-icon icon="mdi:plus"></ha-icon>Ajouter un créneau</button>
-        <div class="sec"><ha-icon icon="mdi:content-copy"></ha-icon>Copier ce jour vers</div>
-        <div class="copy">${DAYS.filter((d) => d !== day).map((d) => `<button class="pchip" data-a="copyday" data-day="${d}">${DAY_S[d]}</button>`).join("")}<button class="pchip" data-a="copyset" data-v="week">Lun → Ven</button><button class="pchip" data-a="copyset" data-v="weekend">Week-end</button><button class="pchip" data-a="copyset" data-v="all">Tous</button></div>
-        ${others.length ? `<div class="sec"><ha-icon icon="mdi:home-group"></ha-icon>Appliquer aussi la semaine à</div><div class="copy">${others.map((r) => `<button class="pchip${e.also.includes(r.id) ? " on" : ""}" data-a="also" data-id="${r.id}">${esc(r.name)}</button>`).join("")}</div>` : ""}`;
+          <div class="sa"><button class="act${s.off ? " on" : ""}" data-a="soff"><ha-icon icon="mdi:power"></ha-icon>${s.off ? _("Rallumer") : _("Arrêt")}</button><button class="act danger" data-a="sdel"><ha-icon icon="mdi:delete-outline"></ha-icon>${_("Supprimer")}</button></div>
+        </div>` : `<div class="hint"><ha-icon icon="mdi:gesture-tap"></ha-icon>${_("Touchez une plage de la frise pour la régler, ou faites glisser les poignées pour changer les horaires.")}${slots.length ? `<button class="pchip" data-a="sfirst">${_("Parcourir les créneaux")}</button>` : ""}</div>`}
+        <button class="add" data-a="sadd"><ha-icon icon="mdi:plus"></ha-icon>${_("Ajouter un créneau")}</button>
+        <div class="sec"><ha-icon icon="mdi:content-copy"></ha-icon>${_("Copier ce jour vers")}</div>
+        <div class="copy">${DAYS.filter((d) => d !== day).map((d) => `<button class="pchip" data-a="copyday" data-day="${d}">${DAY_S[d]}</button>`).join("")}<button class="pchip" data-a="copyset" data-v="week">${_("Lun → Ven")}</button><button class="pchip" data-a="copyset" data-v="weekend">${_("Week-end")}</button><button class="pchip" data-a="copyset" data-v="all">${_("Tous")}</button></div>
+        ${others.length ? `<div class="sec"><ha-icon icon="mdi:home-group"></ha-icon>${_("Appliquer aussi la semaine à")}</div><div class="copy">${others.map((r) => `<button class="pchip${e.also.includes(r.id) ? " on" : ""}" data-a="also" data-id="${r.id}">${esc(r.name)}</button>`).join("")}</div>` : ""}`;
     }
     _bindDay() {
       const bar = this.shadowRoot.getElementById("dbar");
@@ -457,16 +680,16 @@
     _editView() {
       const room = this._view.id ? this._room(this._view.id) : null;
       return `
-        <div class="nav"><button class="ibtn" data-a="${room ? "back-room" : "home"}"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${room ? "Réglages · " + esc(room.name) : "Nouvelle pièce"}</b><span></span></div>
+        <div class="nav"><button class="ibtn" data-a="${room ? "back-room" : "home"}"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${room ? _("Réglages · ") + esc(room.name) : _("Nouvelle pièce")}</b><span></span></div>
         <div class="form" id="form"></div>
-        <div class="fbtns"><button class="pbtn" data-a="rsave">${room ? "Enregistrer" : "Créer la pièce"}</button>${room ? `<button class="act danger" data-a="rdel"><ha-icon icon="mdi:delete-outline"></ha-icon>${this._confirmDel ? "Confirmer la suppression" : "Supprimer la pièce"}</button>` : ""}</div>`;
+        <div class="fbtns"><button class="pbtn" data-a="rsave">${room ? _("Enregistrer") : _("Créer la pièce")}</button>${room ? `<button class="act danger" data-a="rdel"><ha-icon icon="mdi:delete-outline"></ha-icon>${this._confirmDel ? _("Confirmer la suppression") : _("Supprimer la pièce")}</button>` : ""}</div>`;
     }
     _settingsView() {
       return `
-        <div class="nav"><button class="ibtn" data-a="home"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>Réglages généraux</b><span></span></div>
+        <div class="nav"><button class="ibtn" data-a="home"><ha-icon icon="mdi:chevron-left"></ha-icon></button><b>${_("Réglages généraux")}</b><span></span></div>
         <div class="form" id="form"></div>
-        <div class="fbtns"><button class="pbtn" data-a="ssave">Enregistrer</button>${this._data.has_climate_scheduler ? `<button class="act" data-a="import"><ha-icon icon="mdi:import"></ha-icon>Importer depuis Climate Scheduler</button>` : ""}</div>
-        <div class="about">Climat HOLM ${esc(this._data.version)} · carte ${VERSION}</div>`;
+        <div class="fbtns"><button class="pbtn" data-a="ssave">${_("Enregistrer")}</button>${this._data.has_climate_scheduler ? `<button class="act" data-a="import"><ha-icon icon="mdi:import"></ha-icon>${_("Importer depuis Climate Scheduler")}</button>` : ""}</div>
+        <div class="about">Climat HOLM ${esc(this._data.version)} · ${_("carte")} ${VERSION}</div>`;
     }
     _mountForm() {
       const host = this.shadowRoot.getElementById("form");
@@ -488,22 +711,22 @@
           { name: "cool_away_off", selector: { boolean: {} } },
         ];
         f.data = { ...s };
-        const L = { boost_temp: "Température du boost", boost_minutes: "Durée du boost", away_temp: "Température en absence", manual_temp: "Mode manuel (par défaut)", window_delay: "Délai avant arrêt si fenêtre ouverte", cool_away_off: "Arrêter la clim pendant une absence" };
+        const L = { boost_temp: _("Température du boost"), boost_minutes: _("Durée du boost"), away_temp: _("Température en absence"), manual_temp: _("Mode manuel (par défaut)"), window_delay: _("Délai avant arrêt si fenêtre ouverte"), cool_away_off: _("Arrêter la clim pendant une absence") };
         f.computeLabel = (x) => L[x.name] || x.name;
       } else {
         const room = this._view.id ? this._room(this._view.id) : null;
         const cl = (room && room.climates) || [];
         const caps = this._caps({ climates: cl });
-        const optF = OPTS.filter((o) => caps.opts[o.k].length).map((o) => ({ name: "opt_" + o.k, selector: { select: { mode: "dropdown", options: [{ value: "", label: "Ne pas changer" }, ...caps.opts[o.k].map((v) => ({ value: v, label: this._vl(caps, o.k, v) }))] } } }));
+        const optF = OPTS.filter((o) => caps.opts[o.k].length).map((o) => ({ name: "opt_" + o.k, selector: { select: { mode: "dropdown", options: [{ value: "", label: _("Ne pas changer") }, ...caps.opts[o.k].map((v) => ({ value: v, label: this._vl(caps, o.k, v) }))] } } }));
         f.schema = [
           { type: "grid", name: "", schema: [{ name: "name", required: true, selector: { text: {} } }, { name: "icon", selector: { icon: {} } }] },
           { name: "climates", required: true, selector: { entity: { multiple: true, filter: { domain: "climate" } } } },
           { name: "temp_sensor", selector: { entity: { filter: { domain: "sensor", device_class: "temperature" } } } },
           { name: "windows", selector: { entity: { multiple: true, filter: { domain: "binary_sensor" } } } },
-          ...(optF.length ? [{ type: "expandable", name: "", flatten: true, title: "Réglages par défaut des appareils", icon: "mdi:tune-variant", expanded: true, schema: optF }] : []),
+          ...(optF.length ? [{ type: "expandable", name: "", flatten: true, title: _("Réglages par défaut des appareils"), icon: "mdi:tune-variant", expanded: true, schema: optF }] : []),
         ];
         f.data = room ? { name: room.name, icon: room.icon, climates: room.climates, temp_sensor: room.temp_sensor || "", windows: room.windows || [], ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, (room.opts || {})[o.k] || ""])) } : { name: "", icon: "mdi:radiator", climates: [], windows: [] };
-        const L = { name: "Nom de la pièce", icon: "Icône", climates: "Appareils (radiateurs, clims…)", temp_sensor: "Sonde de température (facultatif)", windows: "Fenêtres / portes : arrêt si ouvert (facultatif)", ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, o.l])) };
+        const L = { name: _("Nom de la pièce"), icon: _("Icône"), climates: _("Appareils (radiateurs, clims…)"), temp_sensor: _("Sonde de température (facultatif)"), windows: _("Fenêtres / portes : arrêt si ouvert (facultatif)"), ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, o.l])) };
         f.computeLabel = (x) => L[x.name] || x.name;
       }
       this._form = { ...f.data };
@@ -516,7 +739,7 @@
       const b = e.target.closest("[data-a]");
       if (!b || b.disabled) {
         const seg = e.target.closest(".dbar .seg");
-        if (seg && this._view.name === "day") { const i = Number(seg.dataset.idx); if (i >= 0) { this._edit.sel = i; haptic(); this._render(); } else this._toast("Cette plage vient de la veille : ajoutez un créneau à 00:00 pour la modifier."); }
+        if (seg && this._view.name === "day") { const i = Number(seg.dataset.idx); if (i >= 0) { this._edit.sel = i; haptic(); this._render(); } else this._toast(_("Cette plage vient de la veille : ajoutez un créneau à 00:00 pour la modifier.")); }
         return;
       }
       const a = b.dataset.a, d = this._data, g = d && d.global;
@@ -529,26 +752,26 @@
         case "edit": this._view = { name: "edit", id: room.id }; this._confirmDel = false; return this._render();
         case "new": this._view = { name: "edit" }; return this._render();
         case "back-room":
-          if (this._view.name === "day" && this._edit && this._edit.dirty && !this._leaveOk) { this._leaveOk = true; return this._toast("Modifications non enregistrées : touchez encore ‹ pour les abandonner"); }
+          if (this._view.name === "day" && this._edit && this._edit.dirty && !this._leaveOk) { this._leaveOk = true; return this._toast(_("Modifications non enregistrées : touchez encore ‹ pour les abandonner")); }
           this._leaveOk = false; this._view = { name: "room", id: this._view.id }; return this._render();
-        case "running": return this._ws({ type: "climat_holm/global", running: !g.running }, g.running ? "Programmation en pause" : "Programmation activée");
+        case "running": return this._ws({ type: "climat_holm/global", running: !g.running }, g.running ? _("Programmation en pause") : _("Programmation activée"));
         case "season": return this._ws({ type: "climat_holm/global", season: b.dataset.v });
-        case "away": return this._ws({ type: "climat_holm/global", away: !g.away }, g.away ? "Retour à la maison" : "Mode absence activé");
-        case "alloff": return this._ws({ type: "climat_holm/global", all_off: !g.all_off }, g.all_off ? "Chauffage relancé" : "Tout est arrêté");
-        case "profile": this._pmenu = false; return this._ws({ type: "climat_holm/global", profile: b.dataset.v }, `Profil ${b.dataset.v}`);
+        case "away": return this._ws({ type: "climat_holm/global", away: !g.away }, g.away ? _("Retour à la maison") : _("Mode absence activé"));
+        case "alloff": return this._ws({ type: "climat_holm/global", all_off: !g.all_off }, g.all_off ? _("Chauffage relancé") : _("Tout est arrêté"));
+        case "profile": this._pmenu = false; return this._ws({ type: "climat_holm/global", profile: b.dataset.v }, _("Profil {p}", { p: b.dataset.v }));
         case "padd": this._pedit = { op: "add" }; this._pmenu = false; this._render(); return this.shadowRoot.getElementById("pname").focus();
         case "pmenu": this._pmenu = !this._pmenu; return this._render();
         case "prename": this._pedit = { op: "rename", name: g.profile }; this._pmenu = false; this._render(); return this.shadowRoot.getElementById("pname").focus();
-        case "pdelete": this._pmenu = false; return this._ws({ type: "climat_holm/profile", op: "delete", name: g.profile }, "Profil supprimé").then(() => this._resub());
+        case "pdelete": this._pmenu = false; return this._ws({ type: "climat_holm/profile", op: "delete", name: g.profile }, _("Profil supprimé")).then(() => this._resub());
         case "pcancel": this._pedit = null; return this._render();
         case "pok": {
           const v = (this.shadowRoot.getElementById("pname").value || "").trim();
           if (!v) return;
           const pe = this._pedit; this._pedit = null;
           const msg = pe.op === "add" ? { type: "climat_holm/profile", op: "add", name: v } : { type: "climat_holm/profile", op: "rename", name: pe.name, new_name: v };
-          return this._ws(msg, pe.op === "add" ? `Profil « ${v} » créé (copie de ${g.profile})` : "Profil renommé").then(() => this._resub());
+          return this._ws(msg, pe.op === "add" ? _("Profil « {p} » créé (copie de {q})", { p: v, q: g.profile }) : _("Profil renommé")).then(() => this._resub());
         }
-        case "import": return this._ws({ type: "climat_holm/import_climate_scheduler" }).then((r) => { this._toast(r && r.imported ? `${r.imported} pièce(s) importée(s)` : "Rien de nouveau à importer"); this._resub(); });
+        case "import": return this._ws({ type: "climat_holm/import_climate_scheduler" }).then((r) => { this._toast(r && r.imported ? _("{n} pièce(s) importée(s)", { n: r.imported }) : _("Rien de nouveau à importer")); this._resub(); });
         // pièce
         case "mode": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "mode", mode: b.dataset.v });
         case "tminus": case "tplus": {
@@ -558,14 +781,14 @@
           this._pendingT = t;
           clearTimeout(this._tT);
           this.shadowRoot.querySelector(".setp .big").textContent = fmtT(t) + "°";
-          this._tT = setTimeout(() => this._ws({ type: "climat_holm/action", room_id: room.id, action: "temp", temp: t }, room.mode === "manual" ? null : "Consigne modifiée jusqu'au prochain créneau"), 700);
+          this._tT = setTimeout(() => this._ws({ type: "climat_holm/action", room_id: room.id, action: "temp", temp: t }, room.mode === "manual" ? null : _("Consigne modifiée jusqu'au prochain créneau")), 700);
           room.state = { ...s, temp: t };
           if (room.mode === "manual") room.manual_temp = t;
           return;
         }
-        case "boost": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "boost" }, "Boost lancé");
-        case "next": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "next_slot" }, "Créneau suivant appliqué");
-        case "cancel": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "cancel" }, "Retour au planning");
+        case "boost": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "boost" }, _("Boost lancé"));
+        case "next": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "next_slot" }, _("Créneau suivant appliqué"));
+        case "cancel": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "cancel" }, _("Retour au planning"));
         case "day": {
           const week = clone(this._week(room));
           DAYS.forEach((x) => (week[x] = week[x] || []));
@@ -588,22 +811,22 @@
           const targets = a === "copyday" ? [b.dataset.day] : b.dataset.v === "week" ? DAYS.slice(0, 5) : b.dataset.v === "weekend" ? ["sat", "sun"] : DAYS;
           targets.filter((x) => x !== this._view.day).forEach((x) => (this._edit.week[x] = clone(src)));
           this._edit.dirty = true;
-          this._toast(`Copié vers ${targets.filter((x) => x !== this._view.day).map((x) => DAY_S[x]).join(", ")}`);
+          this._toast(_("Copié vers {d}", { d: targets.filter((x) => x !== this._view.day).map((x) => DAY_S[x]).join(", ") }));
           return this._render();
         }
         case "also": { const id = b.dataset.id, al = this._edit.also; al.includes(id) ? al.splice(al.indexOf(id), 1) : al.push(id); this._edit.dirty = true; return this._render(); }
         case "save": {
-          await this._ws({ type: "climat_holm/schedule", room_id: room.id, days: this._edit.week, apply_to: this._edit.also }, this._edit.also.length ? `Planning enregistré (+ ${this._edit.also.length} pièce${this._edit.also.length > 1 ? "s" : ""})` : "Planning enregistré");
+          await this._ws({ type: "climat_holm/schedule", room_id: room.id, days: this._edit.week, apply_to: this._edit.also }, this._edit.also.length ? _(this._edit.also.length > 1 ? _("Planning enregistré (+ {n} pièces)") : _("Planning enregistré (+ {n} pièce)"), { n: this._edit.also.length }) : _("Planning enregistré"));
           this._edit.orig = clone(this._edit.week); this._edit.dirty = false; this._leaveOk = false;
           return this._render();
         }
         // formulaires
         case "rsave": {
           const f = this._form || {};
-          if (!f.name || !(f.climates || []).length) return this._toast("Indiquez un nom et au moins un appareil", true);
+          if (!f.name || !(f.climates || []).length) return this._toast(_("Indiquez un nom et au moins un appareil"), true);
           const payload = { name: f.name, icon: f.icon || "mdi:radiator", climates: f.climates, temp_sensor: f.temp_sensor || null, windows: f.windows || [], opts: Object.fromEntries(OPTS.map((o) => [o.k, f["opt_" + o.k] || null]).filter(([, v]) => v)) };
           if (this._view.id) payload.id = this._view.id;
-          const r = await this._ws({ type: "climat_holm/room/save", room: payload }, this._view.id ? "Pièce enregistrée" : "Pièce créée");
+          const r = await this._ws({ type: "climat_holm/room/save", room: payload }, this._view.id ? _("Pièce enregistrée") : _("Pièce créée"));
           this._resub();
           this._view = { name: "room", id: (r && r.id) || this._view.id };
           return this._render();
@@ -611,10 +834,10 @@
         case "rdel":
           if (!this._confirmDel) { this._confirmDel = true; return this._render(); }
           this._confirmDel = false;
-          await this._ws({ type: "climat_holm/room/delete", room_id: room.id }, "Pièce supprimée");
+          await this._ws({ type: "climat_holm/room/delete", room_id: room.id }, _("Pièce supprimée"));
           this._view = { name: "home" };
           return this._render();
-        case "ssave": return this._ws({ type: "climat_holm/settings", settings: this._form || {} }, "Réglages enregistrés");
+        case "ssave": return this._ws({ type: "climat_holm/settings", settings: this._form || {} }, _("Réglages enregistrés"));
       }
     }
     _resub() { setTimeout(() => { if (this._unsub) { this._unsub(); this._unsub = null; } this._subscribe(); this._load(); }, 1500); }
@@ -672,9 +895,9 @@
     }
     // libellé d'une plage dans la frise : mode, consigne et options (« Ventil. · Vitesse 1 · Balayage »)
     _segLabel(sg, caps, cool) {
-      if (sg.off) return "Arrêt";
+      if (sg.off) return _("Arrêt");
       const hv = sg.hvac;
-      let base = hv === "fan_only" ? "Ventil." : (hv && HVAC[hv] && hv !== (cool ? "cool" : "heat") ? HVAC[hv].s + " " : "") + (sg.temp != null ? fmtT(sg.temp) + "°" : "");
+      let base = hv === "fan_only" ? _("Ventil.") : (hv && HVAC[hv] && hv !== (cool ? "cool" : "heat") ? HVAC[hv].s + " " : "") + (sg.temp != null ? fmtT(sg.temp) + "°" : "");
       const extra = sg.o ? OPTS.filter((o) => sg.o[o.k]).map((o) => this._vl(caps, o.k, sg.o[o.k])) : [];
       return [base.trim(), ...extra].filter(Boolean).join(" · ");
     }
@@ -685,7 +908,7 @@
       let seg = e.sel != null ? segs.find((s) => s.idx === e.sel) : null;
       if (!seg) seg = segs.reduce((a, b) => (b.to - b.from > a.to - a.from ? b : a));
       const mid = Math.round((seg.from + (seg.to - seg.from) / 2) / SNAP) * SNAP;
-      if (seg.to - seg.from < SNAP * 2 || slots.some((s) => mins(s.t) === mid)) return this._toast("Plus de place ici : raccourcissez d'abord une plage", true);
+      if (seg.to - seg.from < SNAP * 2 || slots.some((s) => mins(s.t) === mid)) return this._toast(_("Plus de place ici : raccourcissez d'abord une plage"), true);
       const ns = seg.off ? { t: hhmm(mid), temp: this._data.settings.comfort_temp || 19.5 } : { t: hhmm(mid), off: true };
       slots.push(ns);
       slots.sort((a, b) => mins(a.t) - mins(b.t));
@@ -696,7 +919,7 @@
     _toast(msg, bad) {
       const t = this.shadowRoot && this.shadowRoot.getElementById("toast");
       if (!t) return;
-      t.textContent = msg;
+      t.textContent = _(msg);
       t.classList.toggle("bad", !!bad);
       t.classList.add("show");
       clearTimeout(this._toastT);
@@ -876,7 +1099,7 @@
   // ======================================================================
   class HolmClimatCardEditor extends HTMLElement {
     setConfig(config) { this._config = { ...config }; if (this._form) this._form.data = this._data(); }
-    set hass(hass) { this._hass = hass; if (!this._form) this._build(); else this._form.hass = hass; }
+    set hass(hass) { this._hass = hass; const _l = setLang(hass, this._config); if (this._form && _l !== this._lang) { this._form.remove(); this._form = null; } this._lang = _l; if (!this._form) { if (!this._building) { this._building = true; this._build().finally(() => (this._building = false)); } } else this._form.hass = hass; }
     _data() { return { theme: "auto", ...this._config }; }
     async _build() {
       let rooms = [];
@@ -884,11 +1107,12 @@
       const f = document.createElement("ha-form");
       f.hass = this._hass;
       f.schema = [
+        langField(),
         { name: "title", selector: { text: {} } },
         { name: "rooms", selector: { select: { multiple: true, mode: "list", options: rooms.map((r) => ({ value: r.id, label: r.name })) } } },
-        { name: "theme", selector: { select: { mode: "dropdown", options: [{ value: "auto", label: "Automatique (clair / sombre)" }, { value: "dark", label: "Sombre" }, { value: "light", label: "Clair" }, { value: "theme", label: "Couleurs de mon thème" }] } } },
+        { name: "theme", selector: { select: { mode: "dropdown", options: [{ value: "auto", label: _("Automatique (clair / sombre)") }, { value: "dark", label: _("Sombre") }, { value: "light", label: _("Clair") }, { value: "theme", label: _("Couleurs de mon thème") }] } } },
       ];
-      const L = { title: "Titre (vide = Chauffage / Climatisation)", rooms: "Pièces affichées (aucune cochée = toutes)", theme: "Apparence" };
+      const L = { language: _("Langue"), title: _("Titre (vide = Chauffage / Climatisation)"), rooms: _("Pièces affichées (aucune cochée = toutes)"), theme: _("Apparence") };
       f.computeLabel = (s) => L[s.name] || s.name;
       f.data = this._data();
       f.addEventListener("value-changed", (e) => {
@@ -896,6 +1120,7 @@
         if (!v.title) delete v.title;
         if (!v.rooms || !v.rooms.length) delete v.rooms;
         if (v.theme === "auto") delete v.theme;
+        if (!v.language) delete v.language;
         this._config = { type: this._config.type || "custom:holm-climat-card", ...v };
         this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));
       });
@@ -908,7 +1133,8 @@
   if (!customElements.get("holm-climat-card-editor")) customElements.define("holm-climat-card-editor", HolmClimatCardEditor);
   window.customCards = window.customCards || [];
   if (!window.customCards.some((c) => c.type === "holm-climat-card")) {
-    window.customCards.push({ type: "holm-climat-card", name: "HOLM Climat", description: "Programmation du chauffage et de la clim, pièce par pièce (intégration Climat HOLM).", preview: false });
+    setLang(document.querySelector("home-assistant")?.hass);
+    window.customCards.push({ type: "holm-climat-card", name: _("HOLM Climat"), description: _("Programmation du chauffage et de la clim, pièce par pièce (intégration Climat HOLM)."), preview: false });
   }
   console.info(`%c HOLM-CLIMAT %c ${VERSION} `, "background:#f97316;color:#fff;border-radius:3px 0 0 3px", "background:#123;color:#fff;border-radius:0 3px 3px 0");
 })();

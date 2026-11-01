@@ -1,0 +1,136 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Moderne planning van verwarming en airco, kamer per kamer. Alles stel je daarna in via de kaart HOLM Climat.",
+        "data": {
+          "import_cs": "Mijn schema's importeren uit Climate Scheduler",
+          "climates": "Toe te voegen apparaten (één kamer per apparaat)",
+          "start_running": "Planning meteen inschakelen"
+        },
+        "data_description": {
+          "import_cs": "Voor elke Climate Scheduler-groep wordt een kamer met zijn schema gemaakt. Laat die schema's uitgeschakeld in Climate Scheduler.",
+          "climates": "Je kunt kamers toevoegen, groeperen of hernoemen via de kaart.",
+          "start_running": "Niet aangevinkt verandert Climat HOLM niets tot je de planning in de kaart inschakelt."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Climat HOLM is al ingesteld."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Instellingen Climat HOLM",
+        "data": {
+          "boost_temp": "Boosttemperatuur",
+          "boost_minutes": "Boostduur",
+          "away_temp": "Afwezigheidstemperatuur",
+          "cool_away_off": "Airco uitzetten bij afwezigheid",
+          "manual_temp": "Temperatuur handmatige modus (standaard)",
+          "window_delay": "Vertraging vóór uitschakelen als een raam open is"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "room": {
+        "name": "Kamer"
+      }
+    },
+    "select": {
+      "profile": {
+        "name": "Profiel"
+      },
+      "season": {
+        "name": "Seizoen"
+      }
+    },
+    "switch": {
+      "running": {
+        "name": "Planning"
+      },
+      "away": {
+        "name": "Afwezigheid"
+      },
+      "all_off": {
+        "name": "Alles stoppen"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Verwarmt (of koelt) een kamer gedurende een bepaalde tijd.",
+      "fields": {
+        "entity_id": {
+          "name": "Kamer",
+          "description": "Climat HOLM-thermostaat van de kamer."
+        },
+        "room": {
+          "name": "Naam van de kamer",
+          "description": "Alternatief voor de entiteit."
+        },
+        "minutes": {
+          "name": "Duur",
+          "description": "In minuten (0 = annuleren)."
+        }
+      }
+    },
+    "next_slot": {
+      "name": "Naar het volgende tijdvak",
+      "description": "Past meteen het volgende tijdvak van het schema toe.",
+      "fields": {
+        "entity_id": {
+          "name": "Kamer",
+          "description": "Climat HOLM-thermostaat van de kamer."
+        },
+        "room": {
+          "name": "Naam van de kamer",
+          "description": "Alternatief voor de entiteit."
+        }
+      }
+    },
+    "cancel_override": {
+      "name": "Terug naar schema",
+      "description": "Annuleert afwijking en boost.",
+      "fields": {
+        "entity_id": {
+          "name": "Kamer",
+          "description": "Climat HOLM-thermostaat van de kamer."
+        },
+        "room": {
+          "name": "Naam van de kamer",
+          "description": "Alternatief voor de entiteit."
+        }
+      }
+    },
+    "set_profile": {
+      "name": "Profiel wijzigen",
+      "description": "Activeert een profiel (Normaal, Vakantie…).",
+      "fields": {
+        "profile": {
+          "name": "Profiel",
+          "description": "Naam van het profiel."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Afwezigheid",
+      "description": "Zet de afwezigheidsmodus aan of uit.",
+      "fields": {
+        "away": {
+          "name": "Afwezig",
+          "description": "Inschakelen of niet."
+        },
+        "until": {
+          "name": "Tot",
+          "description": "Datum en tijd van terugkomst (optioneel)."
+        }
+      }
+    }
+  }
+}

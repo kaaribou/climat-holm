@@ -1,0 +1,136 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Programación moderna de calefacción y climatización, estancia por estancia. Todo se ajusta después en la tarjeta HOLM Climat.",
+        "data": {
+          "import_cs": "Importar mis horarios desde Climate Scheduler",
+          "climates": "Dispositivos a añadir (una estancia por dispositivo)",
+          "start_running": "Activar la programación ahora mismo"
+        },
+        "data_description": {
+          "import_cs": "Se crea una estancia por cada grupo de Climate Scheduler, con su horario. Recuerda dejar esos horarios desactivados en Climate Scheduler.",
+          "climates": "Podrás añadir, agrupar o renombrar estancias desde la tarjeta.",
+          "start_running": "Sin marcar, Climat HOLM no toca nada hasta que actives la programación en la tarjeta."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Climat HOLM ya está configurado."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ajustes de Climat HOLM",
+        "data": {
+          "boost_temp": "Temperatura del boost",
+          "boost_minutes": "Duración del boost",
+          "away_temp": "Temperatura en ausencia",
+          "cool_away_off": "Apagar la climatización durante la ausencia",
+          "manual_temp": "Temperatura del modo manual (por defecto)",
+          "window_delay": "Retardo antes de parar si una ventana está abierta"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "room": {
+        "name": "Estancia"
+      }
+    },
+    "select": {
+      "profile": {
+        "name": "Perfil"
+      },
+      "season": {
+        "name": "Temporada"
+      }
+    },
+    "switch": {
+      "running": {
+        "name": "Programación"
+      },
+      "away": {
+        "name": "Ausencia"
+      },
+      "all_off": {
+        "name": "Detener todo"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Calienta (o enfría) una estancia durante un tiempo dado.",
+      "fields": {
+        "entity_id": {
+          "name": "Estancia",
+          "description": "Termostato Climat HOLM de la estancia."
+        },
+        "room": {
+          "name": "Nombre de la estancia",
+          "description": "Alternativa a la entidad."
+        },
+        "minutes": {
+          "name": "Duración",
+          "description": "En minutos (0 = cancelar)."
+        }
+      }
+    },
+    "next_slot": {
+      "name": "Pasar al siguiente tramo",
+      "description": "Aplica ya el siguiente tramo del horario.",
+      "fields": {
+        "entity_id": {
+          "name": "Estancia",
+          "description": "Termostato Climat HOLM de la estancia."
+        },
+        "room": {
+          "name": "Nombre de la estancia",
+          "description": "Alternativa a la entidad."
+        }
+      }
+    },
+    "cancel_override": {
+      "name": "Volver al horario",
+      "description": "Anula la excepción y el boost.",
+      "fields": {
+        "entity_id": {
+          "name": "Estancia",
+          "description": "Termostato Climat HOLM de la estancia."
+        },
+        "room": {
+          "name": "Nombre de la estancia",
+          "description": "Alternativa a la entidad."
+        }
+      }
+    },
+    "set_profile": {
+      "name": "Cambiar de perfil",
+      "description": "Activa un perfil (Normal, Vacaciones…).",
+      "fields": {
+        "profile": {
+          "name": "Perfil",
+          "description": "Nombre del perfil."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Ausencia",
+      "description": "Activa o desactiva el modo ausencia.",
+      "fields": {
+        "away": {
+          "name": "Ausente",
+          "description": "Activar o no."
+        },
+        "until": {
+          "name": "Hasta",
+          "description": "Fecha y hora de regreso (opcional)."
+        }
+      }
+    }
+  }
+}

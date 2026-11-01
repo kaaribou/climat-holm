@@ -4,6 +4,8 @@
 ![Version](https://img.shields.io/github/v/release/kaaribou/climat-holm)
 ![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.6%2B-03a9f4)
 
+🇫🇷 Français · [🇬🇧 English](README.en.md)
+
 **Le chauffage et la clim de toute la maison, programmés pièce par pièce, dans une seule carte claire et animée.**
 
 Climat HOLM est une intégration **Home Assistant** qui pilote vos radiateurs, pompes à chaleur, climatiseurs et sèche-serviettes (toute entité `climate`) selon un **planning par pièce**. Elle est livrée avec **sa propre carte Lovelace** : on voit toute la maison d'un coup d'œil, on modifie un horaire en faisant glisser une poignée, on lance un boost d'un toucher.
@@ -30,6 +32,12 @@ Climat HOLM est une intégration **Home Assistant** qui pilote vos radiateurs, p
 | Saison clim | Mode et options d'un créneau |
 |---|---|
 | ![Saison clim](docs/images/clim.png) | ![Options d'un créneau](docs/images/options.png) |
+
+
+### 🆕 Nouveautés de la 1.2.0
+
+- 🌍 **8 langues** : l'intégration (configuration, options, entités, actions) est traduite en français, anglais, allemand, espagnol, italien, néerlandais, portugais et polonais, selon la langue de Home Assistant. La carte **HOLM Climat** aussi, éditeur compris ; son option `language` permet d'imposer une langue.
+- 🇬🇧 README en anglais.
 
 ---
 
@@ -116,6 +124,7 @@ Chaque plage affiche son mode, sa consigne et ses options (ex. « Ventil. · Vit
 
 | Option | Description | Par défaut |
 |---|---|---|
+| `language` | Langue de la carte : `fr`, `en`, `de`, `es`, `it`, `nl`, `pt`, `pl` | celle du profil |
 | `title` | Titre de l'en-tête | Chauffage / Climatisation |
 | `rooms` | Limiter la carte à certaines pièces | toutes |
 | `theme` | `auto`, `dark`, `light` ou `theme` (couleurs de votre thème) | `auto` |

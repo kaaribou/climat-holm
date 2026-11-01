@@ -1,0 +1,136 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Moderne Heizungs- und Klimaplanung, Raum für Raum. Alles Weitere wird in der Karte HOLM Climat eingestellt.",
+        "data": {
+          "import_cs": "Meine Zeitpläne aus Climate Scheduler importieren",
+          "climates": "Hinzuzufügende Geräte (ein Raum pro Gerät)",
+          "start_running": "Planung sofort aktivieren"
+        },
+        "data_description": {
+          "import_cs": "Für jede Climate-Scheduler-Gruppe wird ein Raum mit ihrem Zeitplan erstellt. Lassen Sie diese Zeitpläne in Climate Scheduler deaktiviert.",
+          "climates": "Räume können Sie über die Karte hinzufügen, gruppieren oder umbenennen.",
+          "start_running": "Ohne Haken ändert Climat HOLM nichts, bis Sie die Planung in der Karte aktivieren."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Climat HOLM ist bereits eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen Climat HOLM",
+        "data": {
+          "boost_temp": "Boost-Temperatur",
+          "boost_minutes": "Boost-Dauer",
+          "away_temp": "Abwesenheitstemperatur",
+          "cool_away_off": "Klimaanlage bei Abwesenheit ausschalten",
+          "manual_temp": "Temperatur im manuellen Modus (Standard)",
+          "window_delay": "Verzögerung vor dem Ausschalten bei offenem Fenster"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "room": {
+        "name": "Raum"
+      }
+    },
+    "select": {
+      "profile": {
+        "name": "Profil"
+      },
+      "season": {
+        "name": "Jahreszeit"
+      }
+    },
+    "switch": {
+      "running": {
+        "name": "Planung"
+      },
+      "away": {
+        "name": "Abwesenheit"
+      },
+      "all_off": {
+        "name": "Alles ausschalten"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Heizt (oder kühlt) einen Raum für eine bestimmte Zeit.",
+      "fields": {
+        "entity_id": {
+          "name": "Raum",
+          "description": "Climat-HOLM-Thermostat des Raums."
+        },
+        "room": {
+          "name": "Raumname",
+          "description": "Alternative zur Entität."
+        },
+        "minutes": {
+          "name": "Dauer",
+          "description": "In Minuten (0 = abbrechen)."
+        }
+      }
+    },
+    "next_slot": {
+      "name": "Zum nächsten Zeitfenster wechseln",
+      "description": "Wendet sofort das nächste Zeitfenster des Plans an.",
+      "fields": {
+        "entity_id": {
+          "name": "Raum",
+          "description": "Climat-HOLM-Thermostat des Raums."
+        },
+        "room": {
+          "name": "Raumname",
+          "description": "Alternative zur Entität."
+        }
+      }
+    },
+    "cancel_override": {
+      "name": "Zurück zum Plan",
+      "description": "Hebt Übersteuerung und Boost auf.",
+      "fields": {
+        "entity_id": {
+          "name": "Raum",
+          "description": "Climat-HOLM-Thermostat des Raums."
+        },
+        "room": {
+          "name": "Raumname",
+          "description": "Alternative zur Entität."
+        }
+      }
+    },
+    "set_profile": {
+      "name": "Profil wechseln",
+      "description": "Aktiviert ein Profil (Normal, Urlaub…).",
+      "fields": {
+        "profile": {
+          "name": "Profil",
+          "description": "Name des Profils."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Abwesenheit",
+      "description": "Schaltet den Abwesenheitsmodus ein oder aus.",
+      "fields": {
+        "away": {
+          "name": "Abwesend",
+          "description": "Aktivieren oder nicht."
+        },
+        "until": {
+          "name": "Bis",
+          "description": "Rückkehrdatum und -uhrzeit (optional)."
+        }
+      }
+    }
+  }
+}

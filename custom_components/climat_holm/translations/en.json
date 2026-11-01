@@ -3,16 +3,16 @@
     "step": {
       "user": {
         "title": "Climat HOLM",
-        "description": "Modern room-by-room scheduling for heating and air conditioning. Everything is then managed from the HOLM Climat card.",
+        "description": "Modern heating and air conditioning scheduling, room by room. Everything is then set in the HOLM Climat card.",
         "data": {
           "import_cs": "Import my schedules from Climate Scheduler",
           "climates": "Devices to add (one room per device)",
-          "start_running": "Start scheduling right away"
+          "start_running": "Turn scheduling on right away"
         },
         "data_description": {
-          "import_cs": "One room is created per Climate Scheduler group, with its schedule. Keep those schedules disabled in Climate Scheduler.",
+          "import_cs": "A room is created for each Climate Scheduler group, with its schedule. Remember to keep those schedules disabled in Climate Scheduler.",
           "climates": "You can add, group or rename rooms from the card.",
-          "start_running": "If unchecked, Climat HOLM changes nothing until you enable scheduling in the card."
+          "start_running": "Left unticked, Climat HOLM touches nothing until you turn scheduling on in the card."
         }
       }
     },
@@ -28,8 +28,8 @@
           "boost_temp": "Boost temperature",
           "boost_minutes": "Boost duration",
           "away_temp": "Away temperature",
-          "cool_away_off": "Turn A/C off while away",
-          "manual_temp": "Default manual temperature",
+          "cool_away_off": "Turn the A/C off while away",
+          "manual_temp": "Manual mode temperature (default)",
           "window_delay": "Delay before stopping when a window is open"
         }
       }
@@ -57,78 +57,78 @@
         "name": "Away"
       },
       "all_off": {
-        "name": "All off"
+        "name": "Stop everything"
       }
     }
   },
   "services": {
     "boost": {
       "name": "Boost",
-      "description": "Chauffe (ou refroidit) une pièce pendant un temps donné.",
+      "description": "Heats (or cools) a room for a given time.",
       "fields": {
         "entity_id": {
-          "name": "Pièce",
-          "description": "Thermostat Climat HOLM de la pièce."
+          "name": "Room",
+          "description": "The room's Climat HOLM thermostat."
         },
         "room": {
-          "name": "Nom de la pièce",
-          "description": "Alternative à l'entité."
+          "name": "Room name",
+          "description": "Alternative to the entity."
         },
         "minutes": {
-          "name": "Durée",
-          "description": "En minutes (0 = annuler)."
+          "name": "Duration",
+          "description": "In minutes (0 = cancel)."
         }
       }
     },
     "next_slot": {
-      "name": "Passer au créneau suivant",
-      "description": "Applique tout de suite le prochain créneau du planning.",
+      "name": "Skip to the next slot",
+      "description": "Applies the schedule's next slot right away.",
       "fields": {
         "entity_id": {
-          "name": "Pièce",
-          "description": "Thermostat Climat HOLM de la pièce."
+          "name": "Room",
+          "description": "The room's Climat HOLM thermostat."
         },
         "room": {
-          "name": "Nom de la pièce",
-          "description": "Alternative à l'entité."
+          "name": "Room name",
+          "description": "Alternative to the entity."
         }
       }
     },
     "cancel_override": {
-      "name": "Revenir au planning",
-      "description": "Annule dérogation et boost.",
+      "name": "Back to schedule",
+      "description": "Cancels override and boost.",
       "fields": {
         "entity_id": {
-          "name": "Pièce",
-          "description": "Thermostat Climat HOLM de la pièce."
+          "name": "Room",
+          "description": "The room's Climat HOLM thermostat."
         },
         "room": {
-          "name": "Nom de la pièce",
-          "description": "Alternative à l'entité."
+          "name": "Room name",
+          "description": "Alternative to the entity."
         }
       }
     },
     "set_profile": {
-      "name": "Changer de profil",
-      "description": "Active un profil (Normal, Vacances…).",
+      "name": "Change profile",
+      "description": "Activates a profile (Normal, Holidays…).",
       "fields": {
         "profile": {
-          "name": "Profil",
-          "description": "Nom du profil."
+          "name": "Profile",
+          "description": "Profile name."
         }
       }
     },
     "set_away": {
-      "name": "Absence",
-      "description": "Active ou désactive le mode absence.",
+      "name": "Away",
+      "description": "Turns away mode on or off.",
       "fields": {
         "away": {
-          "name": "Absent",
-          "description": "Activer ou non."
+          "name": "Away",
+          "description": "Turn on or not."
         },
         "until": {
-          "name": "Jusqu'au",
-          "description": "Date et heure de retour (facultatif)."
+          "name": "Until",
+          "description": "Return date and time (optional)."
         }
       }
     }

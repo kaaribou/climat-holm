@@ -1,0 +1,136 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Climat HOLM",
+        "description": "Nowoczesne harmonogramy ogrzewania i klimatyzacji, pokój po pokoju. Resztę ustawia się w karcie HOLM Climat.",
+        "data": {
+          "import_cs": "Importuj moje harmonogramy z Climate Scheduler",
+          "climates": "Urządzenia do dodania (jeden pokój na urządzenie)",
+          "start_running": "Włącz harmonogram od razu"
+        },
+        "data_description": {
+          "import_cs": "Dla każdej grupy Climate Scheduler tworzony jest pokój z jej harmonogramem. Pamiętaj, aby pozostawić te harmonogramy wyłączone w Climate Scheduler.",
+          "climates": "Pokoje możesz dodawać, grupować i zmieniać ich nazwy z karty.",
+          "start_running": "Bez zaznaczenia Climat HOLM niczego nie zmienia, dopóki nie włączysz harmonogramu w karcie."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Climat HOLM jest już skonfigurowany."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ustawienia Climat HOLM",
+        "data": {
+          "boost_temp": "Temperatura boostu",
+          "boost_minutes": "Czas boostu",
+          "away_temp": "Temperatura podczas nieobecności",
+          "cool_away_off": "Wyłącz klimatyzację podczas nieobecności",
+          "manual_temp": "Temperatura trybu ręcznego (domyślna)",
+          "window_delay": "Opóźnienie wyłączenia przy otwartym oknie"
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "room": {
+        "name": "Pokój"
+      }
+    },
+    "select": {
+      "profile": {
+        "name": "Profil"
+      },
+      "season": {
+        "name": "Sezon"
+      }
+    },
+    "switch": {
+      "running": {
+        "name": "Harmonogram"
+      },
+      "away": {
+        "name": "Nieobecność"
+      },
+      "all_off": {
+        "name": "Zatrzymaj wszystko"
+      }
+    }
+  },
+  "services": {
+    "boost": {
+      "name": "Boost",
+      "description": "Ogrzewa (lub chłodzi) pokój przez określony czas.",
+      "fields": {
+        "entity_id": {
+          "name": "Pokój",
+          "description": "Termostat Climat HOLM pokoju."
+        },
+        "room": {
+          "name": "Nazwa pokoju",
+          "description": "Alternatywa dla encji."
+        },
+        "minutes": {
+          "name": "Czas",
+          "description": "W minutach (0 = anuluj)."
+        }
+      }
+    },
+    "next_slot": {
+      "name": "Przejdź do następnego przedziału",
+      "description": "Od razu stosuje następny przedział harmonogramu.",
+      "fields": {
+        "entity_id": {
+          "name": "Pokój",
+          "description": "Termostat Climat HOLM pokoju."
+        },
+        "room": {
+          "name": "Nazwa pokoju",
+          "description": "Alternatywa dla encji."
+        }
+      }
+    },
+    "cancel_override": {
+      "name": "Wróć do harmonogramu",
+      "description": "Anuluje odstępstwo i boost.",
+      "fields": {
+        "entity_id": {
+          "name": "Pokój",
+          "description": "Termostat Climat HOLM pokoju."
+        },
+        "room": {
+          "name": "Nazwa pokoju",
+          "description": "Alternatywa dla encji."
+        }
+      }
+    },
+    "set_profile": {
+      "name": "Zmień profil",
+      "description": "Włącza profil (Normalny, Urlop…).",
+      "fields": {
+        "profile": {
+          "name": "Profil",
+          "description": "Nazwa profilu."
+        }
+      }
+    },
+    "set_away": {
+      "name": "Nieobecność",
+      "description": "Włącza lub wyłącza tryb nieobecności.",
+      "fields": {
+        "away": {
+          "name": "Nieobecny",
+          "description": "Włączyć lub nie."
+        },
+        "until": {
+          "name": "Do",
+          "description": "Data i godzina powrotu (opcjonalnie)."
+        }
+      }
+    }
+  }
+}

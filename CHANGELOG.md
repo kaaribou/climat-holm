@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+- **8 langues** : traductions allemand, espagnol, italien, néerlandais, portugais et polonais ajoutées (configuration, options, entités, actions), en plus du français et de l'anglais. Carte HOLM Climat traduite elle aussi (éditeur compris), avec une nouvelle option `language` ; elle suit sinon la langue du profil Home Assistant (anglais si la langue n'est pas traduite).
+- README en anglais (`README.en.md`).
+
 ## 1.1.1
 - **Mise à jour de la carte toujours prise en compte** : l'adresse de la ressource Lovelace utilisait un numéro de version resté à 1.0.0, donc un navigateur pouvait continuer d'afficher l'ancienne carte depuis son cache après une mise à jour. Elle contient maintenant la version de l'intégration et une empreinte du fichier de la carte : toute nouvelle version change l'adresse et force le rechargement.
 
