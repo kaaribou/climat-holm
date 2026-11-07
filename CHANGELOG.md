@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+- **Consigne ajustée d'après la sonde** ([#2](https://github.com/kaaribou/climat-holm/issues/2)) : nouvelle option de pièce `sensor_regulate` (« Ajuster la consigne des appareils d'après la sonde »). Consigne envoyée = consigne + (température de l'appareil − température de la sonde), bornée à ±3 °C, arrondie au pas de l'appareil, changée au plus toutes les 10 minutes et seulement si elle varie d'au moins un pas. Inactive en mode Manuel, à l'arrêt, et si la sonde ou l'appareil n'a pas de température (consigne normale). Correction affichée sur la tuile et dans la pièce (attribut `sensor_adjust` de l'état de la pièce). Sans l'option, rien ne change.
+- **Programmation du jour** : graphique sous les pièces, consigne programmée de chaque pièce de 0 h à 24 h (profil actif), heure actuelle, bulle au survol, légende cliquable (clic : masquer / afficher, double-clic : seulement cette pièce), température réelle du jour en option. Replié par défaut ; options de carte `day_chart` (`collapsed`, `open`, `hide`) et `day_chart_real`. Choix mémorisés par le navigateur.
+
 ## 1.2.0
 - **8 langues** : traductions allemand, espagnol, italien, néerlandais, portugais et polonais ajoutées (configuration, options, entités, actions), en plus du français et de l'anglais. Carte HOLM Climat traduite elle aussi (éditeur compris), avec une nouvelle option `language` ; elle suit sinon la langue du profil Home Assistant (anglais si la langue n'est pas traduite).
 - README en anglais (`README.en.md`).

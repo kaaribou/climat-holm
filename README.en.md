@@ -36,7 +36,12 @@ Climat HOLM is a **Home Assistant** integration that drives your heaters, heat p
 
 *Screenshots in French — the card follows the language of your Home Assistant profile.*
 
-### 🆕 What's new in 1.2.0
+### 🆕 What's new in 1.3.0
+
+- 🌡️ **Setpoint adjusted from the sensor** ([#2](https://github.com/kaaribou/climat-holm/issues/2), idea by olivr2s): an A/C unit or a radiator often measures the room temperature badly. Tick **Adjust the devices' setpoint from the sensor** in a room's settings: Climat HOLM corrects the setpoint sent by the gap between the device's thermometer and the sensor. See [Adjust the setpoint from the sensor](#adjust-the-setpoint-from-the-sensor).
+- 📈 **Today's schedule**: below the rooms, a chart shows each room's setpoint from 0:00 to 24:00, with the current time, details on hover and, optionally, the actual temperature. A click on a room in the legend hides it, a double-click shows only that one. See [Today's schedule](#todays-schedule).
+
+### What's new in 1.2.0
 
 - 🌍 **8 languages**: the integration (setup, options, entities, actions) is translated into English, French, German, Spanish, Italian, Dutch, Portuguese and Polish, following the language of Home Assistant. The **HOLM Climat** card too, editor included; its `language` option lets you force a language.
 - 🇬🇧 English README.
@@ -102,14 +107,44 @@ type: custom:holm-climat-card
 - **Away**: every room goes to the away temperature (and the A/C stops, if you wish).
 - **Stop everything**: general stop, without touching the schedules.
 - **Profiles**: tap a profile to activate it; **+** creates a profile (copy of the active one), ✏️ renames or deletes it.
-- One tile per room; a tap opens the room.
+- One tile per room; a tap opens the room. If the setpoint is adjusted from the sensor, the tile says so (“Sensor 21.0° · correction +1.5°”).
+- Below the tiles, the **Today's schedule** chart (see below).
+
+### Today's schedule
+
+The chart shows at a glance today's schedule of every room, in the active profile. It starts collapsed: tap its title to open or close it (the choice is remembered by the browser).
+
+- **One line per room**, in its colour: the scheduled setpoint from 0:00 to 24:00. A **gap** in the line means off. A room set to **Off** has no line; a room in **Manual** shows its manual setpoint all day. When several rooms share the same setpoint, their lines are offset by a few pixels so they all stay visible.
+- **The vertical orange line**: the current time.
+- **On hover** (or touch), a bubble gives the time and each room's setpoint, and its measured temperature.
+- **The legend**: a click on a room hides or shows it, a double-click shows only that one; **Show all** brings them all back. Rooms that are Off or in Manual are flagged.
+- **Actual temperature**: adds, dotted, the temperature measured today in each room, to check it follows its schedule. Off at first, so the chart stays readable; clearer with one or two rooms shown.
+- Overrides (+/-, next slot), boosts and absences are not drawn: the chart shows the schedule.
+- The card's `day_chart` option opens it from the start (`open`) or hides it (`hide`).
 
 ### A room
 
 - Temperature gauge, **setpoint +/-**: the new setpoint lasts until the next slot, then the schedule resumes.
 - **Auto** (schedule), **Manual** (fixed setpoint, with its own mode and options) or **Off**.
 - **Boost** (adjustable duration), **Next slot**, **Back to schedule**.
-- The week as timelines; tap a day to edit it. The cog opens the room settings: name, icon, devices, sensor, windows, device default options.
+- The week as timelines; tap a day to edit it. The cog opens the room settings: name, icon, devices, sensor (and setpoint adjustment from the sensor), windows, device default options.
+- Below the timelines, the sensor used and, if the adjustment is on, the current correction.
+
+### Adjust the setpoint from the sensor
+
+An A/C unit measures the temperature near its indoor unit (often high on the wall), a radiator near its heating element: their thermometer is often 1 or 2 °C off the room's real temperature. With a **temperature sensor** in the room and the **Adjust the devices' setpoint from the sensor** option, Climat HOLM corrects that gap:
+
+> setpoint sent to the device = scheduled setpoint + (temperature read by the device − sensor temperature)
+
+**Example**: scheduled 21 °C, the A/C reads 22.5 °C but the sensor 21 °C. The A/C receives 22.5 °C and so stops when the room really is at 21 °C. For a radiator reading 18.5 °C when the room is at 19.5 °C, the setpoint is lowered by 1 °C.
+
+To stay simple and keep the device from changing all the time:
+- the correction is limited to **±3 °C** and rounded to the device's step (often 0.5 °C);
+- it changes **at most every 10 minutes**, and only if it moves by at least one step;
+- it only applies to the **schedule** (slots, temporary setpoints, boost, away), not in **Manual** mode, nor when the room is off;
+- if the sensor or the device stops reporting a temperature, the device gets the **normal setpoint**.
+
+The card always shows the wanted setpoint (21 °C in the example); the correction shows on the tile and in the room. This is not full regulation (anticipation, PID…): for that, see [Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat).
 
 ### A day
 
@@ -130,6 +165,8 @@ Each range shows its mode, setpoint and options (e.g. “Fan · Speed 1 · Swing
 | `title` | Header title | Heating / Air conditioning |
 | `rooms` | Limit the card to some rooms | all |
 | `theme` | `auto`, `dark`, `light` or `theme` (your theme's colours) | `auto` |
+| `day_chart` | **Today's schedule** chart: `collapsed` (opens with a click), `open` or `hide` | `collapsed` |
+| `day_chart_real` | Show the actual temperature in that chart from the start | `false` |
 
 ---
 
@@ -208,6 +245,8 @@ From the card (⚙️) or **Settings → Devices & services → Climat HOLM → 
 | A device doesn't follow the schedule | Another tool may also be driving it (device schedule, automation, other integration). |
 | An option doesn't show | The card only shows the modes and options the device reports to Home Assistant. |
 | A heater stops in A/C season | Normal: a device that can't cool is stopped in A/C season, unless the slot forces a mode it knows (Heat). |
+| The room doesn't reach the right temperature although the device thinks it has | Add a sensor to the room and tick **Adjust the devices' setpoint from the sensor**. |
+| The sensor correction doesn't move | Normal for 10 minutes after a change, and while the gap moves by less than one device step. It is inactive in Manual mode and when off. |
 | The new card version doesn't show | Clear the cache (Ctrl + F5, or “Reload resources” in the mobile app). |
 
 ---

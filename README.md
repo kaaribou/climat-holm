@@ -21,7 +21,8 @@ Climat HOLM est une intégration **Home Assistant** qui pilote vos radiateurs, p
 - ⚡ **Actions rapides** : Boost, Créneau suivant, Revenir au planning, mode Auto / Manuel / Arrêt, et pour toute la maison : Absence et Tout arrêter.
 - 🗂️ **Profils** : Normal, Télétravail, Vacances… un planning complet par profil, qu'on bascule d'un toucher.
 - 🪟 **Fenêtres** : arrêt automatique d'une pièce quand une fenêtre reste ouverte (délai réglable).
-- 🌡️ **Sonde au choix** : la température d'une pièce peut venir d'un capteur plus fiable que celui du radiateur.
+- 🌡️ **Sonde au choix** : la température d'une pièce peut venir d'un capteur plus fiable que celui du radiateur, et la consigne des appareils peut être **ajustée d'après cette sonde**.
+- 📈 **La journée en un coup d'œil** : un graphique avec la programmation de toutes les pièces.
 - 🤖 **Prêt pour vos automatisations** : un thermostat par pièce, des interrupteurs, des listes et des actions (services).
 - 🔁 **Import depuis Climate Scheduler** : vos plannings existants sont repris en un clic.
 
@@ -34,7 +35,12 @@ Climat HOLM est une intégration **Home Assistant** qui pilote vos radiateurs, p
 | ![Saison clim](docs/images/clim.png) | ![Options d'un créneau](docs/images/options.png) |
 
 
-### 🆕 Nouveautés de la 1.2.0
+### 🆕 Nouveautés de la 1.3.0
+
+- 🌡️ **Consigne ajustée d'après la sonde** ([#2](https://github.com/kaaribou/climat-holm/issues/2), idée d'olivr2s) : une clim ou un radiateur mesure souvent mal la température de la pièce. Cochez **Ajuster la consigne des appareils d'après la sonde** dans les réglages d'une pièce : Climat HOLM corrige la consigne envoyée de l'écart entre le thermomètre de l'appareil et la sonde. Voir [Ajuster la consigne d'après la sonde](#ajuster-la-consigne-daprès-la-sonde).
+- 📈 **Programmation du jour** : sous les pièces, un graphique montre la consigne de chaque pièce de 0 h à 24 h, avec l'heure actuelle, le détail au survol et, en option, la température réelle. Un clic sur une pièce de la légende la masque, un double-clic n'affiche qu'elle. Voir [Programmation du jour](#programmation-du-jour).
+
+### Nouveautés de la 1.2.0
 
 - 🌍 **8 langues** : l'intégration (configuration, options, entités, actions) est traduite en français, anglais, allemand, espagnol, italien, néerlandais, portugais et polonais, selon la langue de Home Assistant. La carte **HOLM Climat** aussi, éditeur compris ; son option `language` permet d'imposer une langue.
 - 🇬🇧 README en anglais.
@@ -100,14 +106,44 @@ type: custom:holm-climat-card
 - **Absence** : toutes les pièces passent à la température d'absence (et la clim s'arrête, si vous le souhaitez).
 - **Tout arrêter** : arrêt général, sans toucher aux plannings.
 - **Profils** : touchez un profil pour l'activer ; **+** crée un profil (copie du profil actif), ✏️ le renomme ou le supprime.
-- Une tuile par pièce ; un toucher ouvre la pièce.
+- Une tuile par pièce ; un toucher ouvre la pièce. Si la consigne est ajustée d'après la sonde, la tuile l'indique (« Sonde 21,0° · correction +1,5° »).
+- Sous les tuiles, le graphique **Programmation du jour** (voir ci-dessous).
+
+### Programmation du jour
+
+Le graphique montre d'un coup d'œil la programmation de toutes les pièces pour aujourd'hui, dans le profil actif. Il est replié au départ : touchez son titre pour l'ouvrir ou le fermer (le choix est retenu par le navigateur).
+
+- **Un trait par pièce**, de sa couleur : la consigne programmée de 0 h à 24 h. Un **trou** dans le trait, c'est un arrêt. Une pièce en **Arrêt** n'a pas de trait ; une pièce en **Manuel** montre sa consigne manuelle toute la journée. Quand plusieurs pièces ont la même consigne, leurs traits sont décalés de quelques pixels pour rester tous visibles.
+- **Le trait orange vertical** : l'heure actuelle.
+- **Au survol** (ou au toucher), une bulle donne l'heure et la consigne de chaque pièce, et sa température mesurée.
+- **La légende** : un clic sur une pièce la masque ou la réaffiche, un double-clic n'affiche qu'elle ; **Tout afficher** les remet toutes. Les pièces en Arrêt ou en Manuel y sont signalées.
+- **Température réelle** : ajoute en pointillés la température mesurée aujourd'hui dans chaque pièce, pour voir si elle suit son programme. Désactivée au départ, pour ne pas surcharger le graphique ; elle est plus lisible avec une ou deux pièces affichées.
+- Les dérogations (+/-, créneau suivant), les boosts et les absences ne sont pas tracés : le graphique montre le programme.
+- L'option `day_chart` de la carte permet de l'ouvrir d'office (`open`) ou de le masquer (`hide`).
 
 ### Une pièce
 
 - Jauge de température, **consigne +/-** : la nouvelle consigne vaut jusqu'au prochain créneau, puis le planning reprend.
 - **Auto** (planning), **Manuel** (consigne fixe, avec son propre mode et ses options) ou **Arrêt**.
 - **Boost** (durée réglable), **Créneau suivant**, **Revenir au planning**.
-- La semaine en frises ; touchez un jour pour le modifier. La roue dentée ouvre les réglages de la pièce : nom, icône, appareils, sonde, fenêtres, options par défaut des appareils.
+- La semaine en frises ; touchez un jour pour le modifier. La roue dentée ouvre les réglages de la pièce : nom, icône, appareils, sonde (et ajustement de la consigne d'après la sonde), fenêtres, options par défaut des appareils.
+- Sous les frises, la sonde utilisée et, si l'ajustement est actif, la correction en cours.
+
+### Ajuster la consigne d'après la sonde
+
+Une clim mesure la température près de son appareil (souvent en hauteur), un radiateur près de sa résistance : leur thermomètre se trompe souvent de 1 ou 2 °C sur la température réelle de la pièce. Avec une **sonde de température** dans la pièce et l'option **Ajuster la consigne des appareils d'après la sonde**, Climat HOLM corrige cet écart :
+
+> consigne envoyée à l'appareil = consigne programmée + (température lue par l'appareil − température de la sonde)
+
+**Exemple** : programmé 21 °C, la clim lit 22,5 °C mais la sonde 21 °C. La clim reçoit 22,5 °C et s'arrête donc quand la pièce est vraiment à 21 °C. Pour un radiateur qui lit 18,5 °C quand la pièce est à 19,5 °C, la consigne est baissée de 1 °C.
+
+Pour rester simple et éviter que l'appareil change sans arrêt :
+- la correction est limitée à **±3 °C** et arrondie au pas de l'appareil (souvent 0,5 °C) ;
+- elle change **au plus toutes les 10 minutes**, et seulement si elle varie d'au moins un pas ;
+- elle ne s'applique qu'au **programme** (créneaux, consignes temporaires, boost, absence), pas en mode **Manuel**, ni quand la pièce est à l'arrêt ;
+- si la sonde ou l'appareil ne donne plus de température, l'appareil reçoit la **consigne normale**.
+
+La carte affiche toujours la consigne voulue (21 °C dans l'exemple) ; la correction apparaît sur la tuile et dans la pièce. Ce n'est pas une régulation complète (anticipation, PID…) : pour cela, voyez [Versatile Thermostat](https://github.com/jmcollin78/versatile_thermostat).
 
 ### Une journée
 
@@ -128,6 +164,8 @@ Chaque plage affiche son mode, sa consigne et ses options (ex. « Ventil. · Vit
 | `title` | Titre de l'en-tête | Chauffage / Climatisation |
 | `rooms` | Limiter la carte à certaines pièces | toutes |
 | `theme` | `auto`, `dark`, `light` ou `theme` (couleurs de votre thème) | `auto` |
+| `day_chart` | Graphique **Programmation du jour** : `collapsed` (replié, s'ouvre d'un clic), `open` (ouvert) ou `hide` (masqué) | `collapsed` |
+| `day_chart_real` | Afficher la température réelle dans ce graphique dès le départ | `false` |
 
 ---
 
@@ -204,6 +242,8 @@ Depuis la carte (⚙️) ou **Paramètres → Appareils et services → Climat H
 | Un appareil ne suit pas le planning | Un autre outil le pilote peut-être aussi (planning de l'appareil, automatisation, autre intégration). |
 | Une option n'apparaît pas | La carte ne montre que les modes et options que l'appareil annonce à Home Assistant. |
 | Un radiateur s'arrête en saison Clim | Normal : un appareil qui ne sait pas refroidir est arrêté en saison Clim, sauf si le créneau impose un mode qu'il connaît (Chauffe). |
+| La pièce n'atteint pas la bonne température alors que l'appareil croit l'avoir atteinte | Ajoutez une sonde à la pièce et cochez **Ajuster la consigne des appareils d'après la sonde**. |
+| La correction de la sonde ne bouge pas | Normal pendant 10 minutes après un changement, et tant que l'écart varie de moins d'un pas de l'appareil. Elle est inactive en mode Manuel et à l'arrêt. |
 | La nouvelle version de la carte ne s'affiche pas | Videz le cache (Ctrl + F5, ou « Recharger les ressources » dans l'application mobile). |
 
 ---

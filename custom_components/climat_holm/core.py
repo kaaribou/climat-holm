@@ -358,6 +358,7 @@ ROOM_SCHEMA = vol.Schema({
     vol.Optional("icon"): vol.Any(None, str),
     vol.Required("climates"): [str],
     vol.Optional("temp_sensor"): vol.Any(None, str),
+    vol.Optional("sensor_regulate"): bool,
     vol.Optional("windows"): [str],
     vol.Optional("opts"): vol.Any(None, dict),
 }, extra=vol.REMOVE_EXTRA)

@@ -5,7 +5,7 @@ from typing import Final
 
 DOMAIN: Final = "climat_holm"
 NAME: Final = "Climat HOLM"
-VERSION: Final = "1.2.0"
+VERSION: Final = "1.3.0"
 
 CARD_FILENAME: Final = "holm-climat-card.js"
 CARD_URL_PATH: Final = "/climat_holm/holm-climat-card.js"
@@ -42,3 +42,8 @@ DEFAULT_WEEK: Final = {
 }
 
 TICK_SECONDS: Final = 30
+
+# Ajustement de la consigne d'après la sonde de la pièce (#2) : simple compensation de l'écart
+# entre la température lue par l'appareil et celle de la sonde, bornée et recalculée sans précipitation.
+SENSOR_MAX_OFFSET: Final = 3.0      # °C, correction maximale dans un sens ou dans l'autre
+SENSOR_INTERVAL: Final = 600        # s, délai minimal entre deux changements de correction

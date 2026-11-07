@@ -210,7 +210,22 @@
     "Pièces affichées (aucune cochée = toutes)": ["Rooms shown (none ticked = all)", "Angezeigte Räume (keiner angekreuzt = alle)", "Estancias mostradas (ninguna marcada = todas)", "Stanze mostrate (nessuna spuntata = tutte)", "Getoonde kamers (geen aangevinkt = alle)", "Divisões mostradas (nenhuma marcada = todas)", "Wyświetlane pokoje (brak zaznaczenia = wszystkie)"],
     "Apparence": ["Appearance", "Darstellung", "Apariencia", "Aspetto", "Weergave", "Aparência", "Wygląd"],
     "HOLM Climat": ["HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat", "HOLM Climat"],
-    "Programmation du chauffage et de la clim, pièce par pièce (intégration Climat HOLM).": ["Heating and A/C scheduling, room by room (Climat HOLM integration).", "Heizungs- und Klimaplanung, Raum für Raum (Integration Climat HOLM).", "Programación de calefacción y climatización, estancia por estancia (integración Climat HOLM).", "Programmazione di riscaldamento e clima, stanza per stanza (integrazione Climat HOLM).", "Planning van verwarming en airco, kamer per kamer (integratie Climat HOLM).", "Programação do aquecimento e da climatização, divisão a divisão (integração Climat HOLM).", "Harmonogram ogrzewania i klimatyzacji, pokój po pokoju (integracja Climat HOLM)."]
+    "Programmation du chauffage et de la clim, pièce par pièce (intégration Climat HOLM).": ["Heating and A/C scheduling, room by room (Climat HOLM integration).", "Heizungs- und Klimaplanung, Raum für Raum (Integration Climat HOLM).", "Programación de calefacción y climatización, estancia por estancia (integración Climat HOLM).", "Programmazione di riscaldamento e clima, stanza per stanza (integrazione Climat HOLM).", "Planning van verwarming en airco, kamer per kamer (integratie Climat HOLM).", "Programação do aquecimento e da climatização, divisão a divisão (integração Climat HOLM).", "Harmonogram ogrzewania i klimatyzacji, pokój po pokoju (integracja Climat HOLM)."],
+    "Sonde {t}° · correction {o}°": ["Sensor {t}° · correction {o}°", "Fühler {t}° · Korrektur {o}°", "Sonda {t}° · corrección {o}°", "Sonda {t}° · correzione {o}°", "Sensor {t}° · correctie {o}°", "Sonda {t}° · correção {o}°", "Czujnik {t}° · korekta {o}°"],
+    "Consigne ajustée d'après la sonde (inactif pour le moment)": ["Setpoint adjusted from the sensor (inactive right now)", "Sollwert nach dem Fühler angepasst (derzeit inaktiv)", "Consigna ajustada según la sonda (inactivo por ahora)", "Setpoint regolato dalla sonda (al momento inattivo)", "Setpoint aangepast op de sensor (nu niet actief)", "Setpoint ajustado pela sonda (inativo de momento)", "Nastawa korygowana wg czujnika (obecnie nieaktywna)"],
+    "Programmation du jour": ["Today's schedule", "Heutiger Zeitplan", "Programación del día", "Programmazione del giorno", "Planning van vandaag", "Programação do dia", "Harmonogram dnia"],
+    "profil {p}": ["profile {p}", "Profil {p}", "perfil {p}", "profilo {p}", "profiel {p}", "perfil {p}", "profil {p}"],
+    "Clic : masquer / afficher · double-clic : seulement cette pièce": ["Click: hide / show · double-click: only this room", "Klick: aus-/einblenden · Doppelklick: nur dieser Raum", "Clic: ocultar / mostrar · doble clic: solo esta estancia", "Clic: nascondi / mostra · doppio clic: solo questa stanza", "Klik: verbergen / tonen · dubbelklik: alleen deze ruimte", "Clique: ocultar / mostrar · duplo clique: só esta divisão", "Klik: ukryj / pokaż · dwuklik: tylko to pomieszczenie"],
+    "Tout afficher": ["Show all", "Alle anzeigen", "Mostrar todo", "Mostra tutto", "Alles tonen", "Mostrar tudo", "Pokaż wszystko"],
+    "Température mesurée aujourd'hui, en pointillés": ["Temperature measured today, dotted", "Heute gemessene Temperatur, gepunktet", "Temperatura medida hoy, punteada", "Temperatura misurata oggi, tratteggiata", "Vandaag gemeten temperatuur, gestippeld", "Temperatura medida hoje, pontilhada", "Temperatura zmierzona dziś, kropkowana"],
+    "Température réelle": ["Actual temperature", "Tatsächliche Temperatur", "Temperatura real", "Temperatura reale", "Werkelijke temperatuur", "Temperatura real", "Temperatura rzeczywista"],
+    "Trait plein : consigne programmée · pointillés : température mesurée · trou : arrêt. Les dérogations, boosts et absences ne sont pas tracés.": ["Solid line: scheduled setpoint · dotted: measured temperature · gap: off. Overrides, boosts and absences are not drawn.", "Durchgezogen: geplanter Sollwert · gepunktet: gemessene Temperatur · Lücke: aus. Abweichungen, Boosts und Abwesenheiten werden nicht gezeichnet.", "Línea continua: consigna programada · punteada: temperatura medida · hueco: apagado. Excepciones, boosts y ausencias no se dibujan.", "Linea continua: setpoint programmato · tratteggio: temperatura misurata · vuoto: spento. Deroghe, boost e assenze non sono tracciati.", "Doorgetrokken: geplande setpoint · gestippeld: gemeten temperatuur · gat: uit. Afwijkingen, boosts en afwezigheid worden niet getekend.", "Linha contínua: setpoint programado · pontilhado: temperatura medida · falha: desligado. Exceções, boosts e ausências não são desenhados.", "Linia ciągła: zaplanowana nastawa · kropki: zmierzona temperatura · przerwa: wyłączone. Odstępstwa, boosty i nieobecności nie są rysowane."],
+    "Ajuster la consigne des appareils d'après la sonde": ["Adjust the devices' setpoint from the sensor", "Sollwert der Geräte nach dem Fühler anpassen", "Ajustar la consigna de los aparatos según la sonda", "Regola il setpoint dei dispositivi in base alla sonda", "Setpoint van de apparaten aanpassen op de sensor", "Ajustar o setpoint dos aparelhos pela sonda", "Koryguj nastawę urządzeń wg czujnika"],
+    "Corrige l'écart entre la sonde et le thermomètre de l'appareil (clim, radiateur) : consigne envoyée = consigne + (température de l'appareil − température de la sonde), au plus ±3°, revue au plus toutes les 10 minutes. Pas en mode Manuel ; sans sonde disponible, consigne normale.": ["Corrects the gap between the sensor and the device's thermometer (A/C, radiator): setpoint sent = setpoint + (device temperature − sensor temperature), at most ±3°, reviewed at most every 10 minutes. Not in Manual mode; without an available sensor, normal setpoint.", "Gleicht die Abweichung zwischen Fühler und Gerätethermometer (Klima, Heizkörper) aus: gesendeter Sollwert = Sollwert + (Gerätetemperatur − Fühlertemperatur), höchstens ±3°, höchstens alle 10 Minuten neu berechnet. Nicht im manuellen Modus; ohne verfügbaren Fühler normaler Sollwert.", "Corrige la diferencia entre la sonda y el termómetro del aparato (aire, radiador): consigna enviada = consigna + (temperatura del aparato − temperatura de la sonda), como máximo ±3°, revisada como mucho cada 10 minutos. No en modo Manual; sin sonda disponible, consigna normal.", "Corregge lo scarto tra la sonda e il termometro del dispositivo (clima, radiatore): setpoint inviato = setpoint + (temperatura del dispositivo − temperatura della sonda), al massimo ±3°, rivisto al massimo ogni 10 minuti. Non in modalità Manuale; senza sonda disponibile, setpoint normale.", "Corrigeert het verschil tussen de sensor en de thermometer van het apparaat (airco, radiator): verzonden setpoint = setpoint + (apparaattemperatuur − sensortemperatuur), hoogstens ±3°, hoogstens elke 10 minuten herzien. Niet in handmatige modus; zonder beschikbare sensor normaal setpoint.", "Corrige a diferença entre a sonda e o termómetro do aparelho (AC, radiador): setpoint enviado = setpoint + (temperatura do aparelho − temperatura da sonda), no máximo ±3°, revisto no máximo a cada 10 minutos. Não no modo Manual; sem sonda disponível, setpoint normal.", "Koryguje różnicę między czujnikiem a termometrem urządzenia (klimatyzator, grzejnik): wysłana nastawa = nastawa + (temperatura urządzenia − temperatura czujnika), maks. ±3°, zmieniana najwyżej co 10 minut. Nie w trybie ręcznym; bez dostępnego czujnika nastawa normalna."],
+    "Replié (s'ouvre d'un clic)": ["Collapsed (opens with a click)", "Eingeklappt (öffnet per Klick)", "Plegado (se abre con un clic)", "Chiuso (si apre con un clic)", "Ingeklapt (opent met een klik)", "Recolhido (abre com um clique)", "Zwinięty (otwiera się kliknięciem)"],
+    "Ouvert": ["Open", "Geöffnet", "Abierto", "Aperto", "Open", "Aberto", "Otwarty"],
+    "Masqué": ["Hidden", "Ausgeblendet", "Oculto", "Nascosto", "Verborgen", "Oculto", "Ukryty"],
+    "Graphique de la journée": ["Day chart", "Tagesdiagramm", "Gráfico del día", "Grafico del giorno", "Dagdiagram", "Gráfico do dia", "Wykres dnia"],
   };
   let LANG = "fr", NUMLOC = "fr-FR";
   const langOf = (hass, c) => { const l = String((c && c.language) || (hass && ((hass.locale && hass.locale.language) || hass.language)) || navigator.language || "en").toLowerCase().split(/[-_]/)[0]; return l === "fr" || HOLM_LANGS.includes(l) ? l : "en"; };
@@ -223,7 +238,7 @@
     if (o.selector && o.selector.select && o.name !== "language") o.selector = { ...o.selector, select: { ...o.selector.select, options: (o.selector.select.options || []).map((op) => (typeof op === "string" ? op : { ...op, label: _(op.label) })) } };
     if (o.name === "language" && o.selector && o.selector.select) o.selector = { ...o.selector, select: { ...o.selector.select, options: o.selector.select.options.map((op) => (op.value ? op : { ...op, label: _("Automatique (profil)") })) } };
     return o; });
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof v === "string" ? _(v) : v && typeof v === "object" ? _T(v) : v; } });
   const DAY_S_RAW = { mon: _("Lun"), tue: _("Mar"), wed: _("Mer"), thu: _("Jeu"), fri: _("Ven"), sat: _("Sam"), sun: _("Dim") };
@@ -331,6 +346,11 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       return `<span class="seg${s.off ? " off" : ""}${sel}" data-idx="${s.idx}"${txt ? ` title="${esc(txt)}"` : ""} style="left:${(s.from / 1440) * 100}%;width:${w}%;${c ? `--sc:${c}` : ""};--d:${i * 40}ms">${opts.big && w > 2.5 ? `<b>${esc(txt)}</b>` : ""}</span>`;
     }).join("")}${now != null ? `<i class="now" style="left:${(now / 1440) * 100}%"></i>` : ""}</div>`;
   };
+
+  // graphique de la journée : une couleur par pièce, choix mémorisés par le navigateur
+  const DC_PAL = ["#f97316", "#38bdf8", "#a78bfa", "#34d399", "#f472b6", "#facc15", "#60a5fa", "#fb7185", "#2dd4bf", "#c084fc", "#a3e635", "#fbbf24"];
+  const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* */ } };
 
   // ======================================================================
   class HolmClimatCard extends HTMLElement {
@@ -475,6 +495,10 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         r.innerHTML = `<style>${HolmClimatCard.css()}</style><ha-card><div class="glow"></div><div id="v" class="view"></div><div class="toast" id="toast"></div></ha-card>`;
         this._shell = true;
         r.getElementById("v").addEventListener("click", (e) => this._click(e));
+        r.getElementById("v").addEventListener("dblclick", (e) => {   // légende du graphique : seulement cette pièce
+          const b = e.target.closest('[data-a="dc-room"]'); if (!b) return;
+          const st = this._dcState(); st.hidden = this._rooms().map((x) => x.id).filter((id) => id !== b.dataset.id); lsSet("holm-climat-dc-hidden", st.hidden); this._render();
+        });
       }
       const v = r.getElementById("v");
       const html = this._error ? this._empty("mdi:thermometer-off", this._error)
@@ -489,7 +513,121 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       v.innerHTML = html;
       v.classList.toggle("anim", this._anim);
       if (this._view.name === "day") this._bindDay();
+      if (this._view.name === "home") this._bindDc();
       if (this._view.name === "edit" || this._view.name === "settings") this._mountForm();
+    }
+    // texte de l'ajustement d'après la sonde (#2) : « Sonde 21,0° · correction +1,5° »
+    _sensorTxt(s) {
+      const a = s.sensor_adjust || {};
+      const o = Number(a.offset || 0);
+      return _("Sonde {t}° · correction {o}°", { t: fmtT(a.temp), o: (o > 0 ? "+" : o < 0 ? "−" : "") + fmtT(Math.abs(o)) });
+    }
+
+    // ---------- graphique de la journée : consigne programmée de chaque pièce (et température réelle en option)
+    _dcState() {
+      if (!this._dc) this._dc = { open: lsGet("holm-climat-dc-open", this._config.day_chart === "open"), hidden: lsGet("holm-climat-dc-hidden", []), real: lsGet("holm-climat-dc-real", this._config.day_chart_real === true) };
+      return this._dc;
+    }
+    _dayChart(rooms) {
+      if (this._config.day_chart === "hide") return "";
+      const st = this._dcState(), cool = this._cool, day = todayKey();
+      const head = `<button class="dch-h" data-a="dc-open"><ha-icon icon="mdi:chart-timeline-variant"></ha-icon><b>${_("Programmation du jour")}</b><small>${esc(DAY_L[day])} · ${_("profil {p}", { p: esc(this._data.global.profile) })}</small><ha-icon class="chev${st.open ? " up" : ""}" icon="mdi:chevron-down"></ha-icon></button>`;
+      if (!st.open) return `<div class="dch">${head}</div>`;
+      // pièce sur « Arrêt » : pas de trait ; en mode Manuel : sa consigne manuelle toute la journée
+      const daySegs = (r) => r.mode === "off" ? [{ from: 0, to: 1440, off: true, temp: null }]
+        : r.mode === "manual" ? [{ from: 0, to: 1440, off: false, temp: r.manual_temp ?? this._data.settings.manual_temp }]
+          : segments(this._week(r), day);
+      const lines = rooms.map((r, i) => ({ r, col: DC_PAL[i % DC_PAL.length], segs: daySegs(r), hid: st.hidden.includes(r.id) }));
+      const vis = lines.filter((l) => !l.hid);
+      if (st.real) this._dcLoad(rooms);
+      const real = st.real && this._dh ? this._dh.data : {};
+      // échelle verticale : consignes et températures réelles visibles
+      const vals = [];
+      vis.forEach((l) => { l.segs.forEach((g) => !g.off && g.temp != null && vals.push(Number(g.temp))); (real[l.r.entity_id] || []).forEach((p) => vals.push(p.v)); });
+      let lo = vals.length ? Math.floor(Math.min(...vals) - 0.5) : 16, hi = vals.length ? Math.ceil(Math.max(...vals) + 0.5) : 22;
+      if (hi - lo < 4) { const m = (hi + lo) / 2; lo = Math.floor(m - 2); hi = Math.ceil(m + 2); }
+      const X = (m) => (m / 1440) * 1000, Y = (t) => 100 - ((t - lo) / (hi - lo)) * 100;
+      const step = hi - lo > 8 ? 2 : 1;
+      const grid = []; for (let t = lo; t <= hi; t += step) grid.push(t);
+      // pièces au même programme : leurs traits sont décalés de 3 px pour rester tous visibles (ruban)
+      const H = 170, gap = 3;
+      const paths = vis.map((l, vi) => {
+        const dy = (((vi - (vis.length - 1) / 2) * gap) / H) * 100;
+        let d = "", prev = null;
+        l.segs.forEach((g) => {
+          if (g.off || g.temp == null) { prev = null; return; }
+          const y = Y(Number(g.temp));
+          d += prev != null && prev.to === g.from ? ` L${X(g.from)},${y}` : ` M${X(g.from)},${y}`;
+          d += ` L${X(g.to)},${y}`; prev = g;
+        });
+        const pts = (real[l.r.entity_id] || []).map((p) => `${X(p.m).toFixed(1)},${Y(p.v).toFixed(2)}`);
+        return `${d ? `<path class="sp" d="${d.trim()}" transform="translate(0 ${dy.toFixed(3)})" style="--lc:${l.col}"/>` : ""}${pts.length > 1 ? `<polyline class="rp" points="${pts.join(" ")}" style="--lc:${l.col}"/>` : ""}`;
+      }).join("");
+      const now = nowMin();
+      this._dcLines = lines; this._dcScale = { lo, hi };
+      return `<div class="dch open">${head}
+        <div class="dcb">
+          <div class="plot" data-dc="plot">
+            ${grid.map((t) => `<span class="gy" style="top:${Y(t)}%"><em>${t}°</em></span>`).join("")}
+            <svg viewBox="0 0 1000 100" preserveAspectRatio="none">${paths}</svg>
+            <i class="dnow" style="left:${(now / 1440) * 100}%"></i>
+            <div class="dtip" hidden></div>
+          </div>
+          <div class="dhours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+          <div class="dleg">${lines.map((l) => `<button class="dl${l.hid ? " off" : ""}" data-a="dc-room" data-id="${l.r.id}" title="${_("Clic : masquer / afficher · double-clic : seulement cette pièce")}"><i style="background:${l.col}"></i>${esc(l.r.name)}${l.r.mode === "off" ? `<small>${_("Arrêt")}</small>` : l.r.mode === "manual" ? `<small>${_("Manuel")}</small>` : ""}</button>`).join("")}
+            ${st.hidden.length ? `<button class="dl all" data-a="dc-all">${_("Tout afficher")}</button>` : ""}
+            <button class="dl real${st.real ? " on" : ""}" data-a="dc-real" title="${_("Température mesurée aujourd'hui, en pointillés")}"><ha-icon icon="mdi:thermometer"></ha-icon>${_("Température réelle")}</button>
+          </div>
+          <div class="dnote">${_("Trait plein : consigne programmée · pointillés : température mesurée · trou : arrêt. Les dérogations, boosts et absences ne sont pas tracés.")}</div>
+        </div></div>`;
+    }
+    // températures réelles du jour : historique des entités « pièce » de Climat HOLM (attribut current_temperature)
+    async _dcLoad(rooms) {
+      const ids = rooms.map((r) => r.entity_id).filter(Boolean);
+      const key = ids.join(",");
+      if (!ids.length || this._dhBusy || (this._dh && this._dh.key === key && Date.now() - this._dh.at < 300000)) return;
+      this._dhBusy = true;
+      try {
+        const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+        const res = await this._hass.callWS({ type: "history/history_during_period", start_time: d0.toISOString(), entity_ids: ids, minimal_response: false, no_attributes: false, significant_changes_only: false });
+        const data = {};
+        for (const id of ids) {
+          data[id] = (res[id] || []).map((h) => {
+            const v = h.a && h.a.current_temperature != null ? Number(h.a.current_temperature) : null;
+            const t = new Date(((h.lu || h.lc) || 0) * 1000);
+            const m = Math.max(0, (t - d0) / 60000);
+            return v == null || isNaN(v) ? null : { m: Math.min(1440, m), v };
+          }).filter(Boolean);
+          const cur = this._hass.states[id], cv = cur && cur.attributes.current_temperature;
+          if (cv != null) data[id].push({ m: nowMin(), v: Number(cv) });
+        }
+        this._dh = { key, at: Date.now(), data };
+        if (this._view.name === "home") this._render();
+      } catch (e) { this._dh = { key, at: Date.now(), data: {} }; }
+      this._dhBusy = false;
+    }
+    _bindDc() {
+      const plot = this.shadowRoot.querySelector('[data-dc="plot"]');
+      if (!plot || !this._dcLines) return;
+      const tip = plot.querySelector(".dtip");
+      const move = (ev) => {
+        const r = plot.getBoundingClientRect(), x = Math.max(0, Math.min(r.width, ev.clientX - r.left));
+        const m = Math.round((x / r.width) * 1440 / 5) * 5;
+        const real = this._dc.real && this._dh ? this._dh.data : {};
+        const rows = this._dcLines.filter((l) => !l.hid).map((l) => {
+          const g = l.segs.find((z) => m >= z.from && m < z.to) || l.segs[l.segs.length - 1];
+          const rr = (real[l.r.entity_id] || []).filter((p) => p.m <= m).pop();
+          return `<div><i style="background:${l.col}"></i><span>${esc(l.r.name)}</span><b>${g.off || g.temp == null ? _("Arrêt") : fmtT(g.temp) + "°"}</b>${rr && m <= nowMin() ? `<small>${fmtT(rr.v)}°</small>` : ""}</div>`;
+        });
+        tip.innerHTML = `<div class="th">${hhmm(Math.min(m, 1439))}</div>${rows.join("")}`;
+        tip.hidden = false;
+        tip.style.left = Math.min(r.width - tip.offsetWidth - 4, Math.max(4, x + 12)) + "px";
+        plot.style.setProperty("--hx", x + "px");
+        plot.classList.add("hov");
+      };
+      plot.addEventListener("pointermove", move);
+      plot.addEventListener("pointerdown", move);
+      plot.addEventListener("pointerleave", () => { tip.hidden = true; plot.classList.remove("hov"); });
     }
     _empty(icon, text, sub = "") { return `<div class="empty"><ha-icon icon="${icon}"></ha-icon><b>${esc(text)}</b>${sub ? `<small>${sub}</small>` : ""}</div>`; }
 
@@ -521,7 +659,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
           : `<button class="pchip add" data-a="padd" title="${_("Nouveau profil (copie du profil actif)")}"><ha-icon icon="mdi:plus"></ha-icon></button>${d.profiles.length ? `<button class="pchip add" data-a="pmenu" title="${_("Renommer / supprimer le profil actif")}"><ha-icon icon="mdi:pencil-outline"></ha-icon></button>` : ""}`}
         </div>
         ${this._pmenu ? `<div class="pmenu"><span>${_("Profil « {p} »", { p: esc(g.profile) })}</span><button class="mini txt" data-a="prename">${_("Renommer")}</button><button class="mini txt danger" data-a="pdelete"${d.profiles.length < 2 ? " disabled" : ""}>${_("Supprimer")}</button><button class="mini" data-a="pmenu"><ha-icon icon="mdi:close"></ha-icon></button></div>` : ""}
-        ${rooms.length ? `<div class="grid">${rooms.map((room, i) => this._tile(room, i)).join("")}</div>` : this._empty("mdi:home-thermometer-outline", _("Aucune pièce pour l'instant"), d.has_climate_scheduler ? `<button class="pbtn" data-a="import">${_("Importer depuis Climate Scheduler")}</button>` : "")}
+        ${rooms.length ? `<div class="grid">${rooms.map((room, i) => this._tile(room, i)).join("")}</div>${this._dayChart(rooms)}` : this._empty("mdi:home-thermometer-outline", _("Aucune pièce pour l'instant"), d.has_climate_scheduler ? `<button class="pbtn" data-a="import">${_("Importer depuis Climate Scheduler")}</button>` : "")}
         <button class="add" data-a="new"><ha-icon icon="mdi:plus"></ha-icon>${_("Ajouter une pièce")}</button>`;
     }
 
@@ -557,6 +695,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         <div class="tt"><ha-icon icon="${esc(room.icon || "mdi:radiator")}"></ha-icon><span>${esc(room.name)}</span>${act ? `<ha-icon class="fx" icon="${act === "heating" ? "mdi:fire" : "mdi:snowflake"}"></ha-icon>` : ""}</div>
         <div class="tv"><span class="cur">${fmtT(s.current)}<small>°</small></span>${!off ? `<span class="tgt"><ha-icon icon="${HVAC[s.hvac] && s.hvac !== (cool ? "cool" : "heat") ? HVAC[s.hvac].i : "mdi:arrow-right-thin"}"></ha-icon>${s.temp != null ? fmtT(s.temp) + "°" : s.hvac === "fan_only" ? _("Ventil.") : esc(HVAC[s.hvac] ? HVAC[s.hvac].s : "")}</span>` : `<span class="tgt off"><ha-icon icon="mdi:power"></ha-icon>${_("Arrêt")}</span>`}</div>
         <div class="ts ${st.c}"><ha-icon icon="${st.i}"></ha-icon><span>${esc(st.t)}</span></div>
+        ${s.sensor_adjust && s.sensor_adjust.offset ? `<div class="ts mute"><ha-icon icon="mdi:thermometer-check"></ha-icon><span>${esc(this._sensorTxt(s))}</span></div>` : ""}
         ${barHTML(this._week(room), todayKey(), cool)}
       </button>`;
     }
@@ -597,7 +736,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         <div class="week">${DAYS.map((d, i) => `<button class="wrow${d === todayKey() ? " today" : ""}" data-a="day" data-day="${d}" style="--i:${i}"><span>${DAY_S[d]}</span>${barHTML(week, d, cool)}<ha-icon icon="mdi:chevron-right"></ha-icon></button>`).join("")}
           <div class="hours"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
         </div>
-        ${(room.windows || []).length || room.temp_sensor ? `<div class="meta">${room.temp_sensor ? `<span><ha-icon icon="mdi:thermometer"></ha-icon>${_("Sonde : {n}", { n: esc(this._name(room.temp_sensor)) })}</span>` : ""}${(room.windows || []).length ? `<span><ha-icon icon="mdi:window-closed-variant"></ha-icon>${_(room.windows.length > 1 ? _("{n} ouvrants surveillés") : _("{n} ouvrant surveillé"), { n: room.windows.length })}</span>` : ""}</div>` : ""}`;
+        ${(room.windows || []).length || room.temp_sensor ? `<div class="meta">${room.temp_sensor ? `<span><ha-icon icon="mdi:thermometer"></ha-icon>${_("Sonde : {n}", { n: esc(this._name(room.temp_sensor)) })}</span>` : ""}${room.temp_sensor && room.sensor_regulate ? `<span><ha-icon icon="mdi:thermometer-check"></ha-icon>${s.sensor_adjust ? esc(this._sensorTxt(s)) : _("Consigne ajustée d'après la sonde (inactif pour le moment)")}</span>` : ""}${(room.windows || []).length ? `<span><ha-icon icon="mdi:window-closed-variant"></ha-icon>${_(room.windows.length > 1 ? _("{n} ouvrants surveillés") : _("{n} ouvrant surveillé"), { n: room.windows.length })}</span>` : ""}</div>` : ""}`;
     }
     // choix du mode (null = celui de la saison)
     _modePicker(caps, cur, act) {
@@ -722,12 +861,14 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
           { type: "grid", name: "", schema: [{ name: "name", required: true, selector: { text: {} } }, { name: "icon", selector: { icon: {} } }] },
           { name: "climates", required: true, selector: { entity: { multiple: true, filter: { domain: "climate" } } } },
           { name: "temp_sensor", selector: { entity: { filter: { domain: "sensor", device_class: "temperature" } } } },
+          { name: "sensor_regulate", selector: { boolean: {} } },
           { name: "windows", selector: { entity: { multiple: true, filter: { domain: "binary_sensor" } } } },
           ...(optF.length ? [{ type: "expandable", name: "", flatten: true, title: _("Réglages par défaut des appareils"), icon: "mdi:tune-variant", expanded: true, schema: optF }] : []),
         ];
-        f.data = room ? { name: room.name, icon: room.icon, climates: room.climates, temp_sensor: room.temp_sensor || "", windows: room.windows || [], ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, (room.opts || {})[o.k] || ""])) } : { name: "", icon: "mdi:radiator", climates: [], windows: [] };
-        const L = { name: _("Nom de la pièce"), icon: _("Icône"), climates: _("Appareils (radiateurs, clims…)"), temp_sensor: _("Sonde de température (facultatif)"), windows: _("Fenêtres / portes : arrêt si ouvert (facultatif)"), ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, o.l])) };
+        f.data = room ? { name: room.name, icon: room.icon, climates: room.climates, temp_sensor: room.temp_sensor || "", sensor_regulate: !!room.sensor_regulate, windows: room.windows || [], ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, (room.opts || {})[o.k] || ""])) } : { name: "", icon: "mdi:radiator", climates: [], windows: [] };
+        const L = { name: _("Nom de la pièce"), icon: _("Icône"), climates: _("Appareils (radiateurs, clims…)"), temp_sensor: _("Sonde de température (facultatif)"), sensor_regulate: _("Ajuster la consigne des appareils d'après la sonde"), windows: _("Fenêtres / portes : arrêt si ouvert (facultatif)"), ...Object.fromEntries(OPTS.map((o) => ["opt_" + o.k, o.l])) };
         f.computeLabel = (x) => L[x.name] || x.name;
+        f.computeHelper = (x) => (x.name === "sensor_regulate" ? _("Corrige l'écart entre la sonde et le thermomètre de l'appareil (clim, radiateur) : consigne envoyée = consigne + (température de l'appareil − température de la sonde), au plus ±3°, revue au plus toutes les 10 minutes. Pas en mode Manuel ; sans sonde disponible, consigne normale.") : undefined);
       }
       this._form = { ...f.data };
       f.addEventListener("value-changed", (ev) => { this._form = ev.detail.value; f.data = ev.detail.value; });
@@ -748,6 +889,10 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       switch (a) {
         case "home": this._view = { name: "home" }; this._confirmDel = false; return this._render();
         case "settings": this._view = { name: "settings" }; return this._render();
+        case "dc-open": { const st = this._dcState(); st.open = !st.open; lsSet("holm-climat-dc-open", st.open); return this._render(); }
+        case "dc-room": { const st = this._dcState(), id = b.dataset.id; st.hidden = st.hidden.includes(id) ? st.hidden.filter((x) => x !== id) : [...st.hidden, id]; lsSet("holm-climat-dc-hidden", st.hidden); return this._render(); }
+        case "dc-all": { const st = this._dcState(); st.hidden = []; lsSet("holm-climat-dc-hidden", []); return this._render(); }
+        case "dc-real": { const st = this._dcState(); st.real = !st.real; lsSet("holm-climat-dc-real", st.real); return this._render(); }
         case "room": this._view = { name: "room", id: b.dataset.id }; return this._render();
         case "edit": this._view = { name: "edit", id: room.id }; this._confirmDel = false; return this._render();
         case "new": this._view = { name: "edit" }; return this._render();
@@ -824,7 +969,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         case "rsave": {
           const f = this._form || {};
           if (!f.name || !(f.climates || []).length) return this._toast(_("Indiquez un nom et au moins un appareil"), true);
-          const payload = { name: f.name, icon: f.icon || "mdi:radiator", climates: f.climates, temp_sensor: f.temp_sensor || null, windows: f.windows || [], opts: Object.fromEntries(OPTS.map((o) => [o.k, f["opt_" + o.k] || null]).filter(([, v]) => v)) };
+          const payload = { name: f.name, icon: f.icon || "mdi:radiator", climates: f.climates, temp_sensor: f.temp_sensor || null, sensor_regulate: !!(f.temp_sensor && f.sensor_regulate), windows: f.windows || [], opts: Object.fromEntries(OPTS.map((o) => [o.k, f["opt_" + o.k] || null]).filter(([, v]) => v)) };
           if (this._view.id) payload.id = this._view.id;
           const r = await this._ws({ type: "climat_holm/room/save", room: payload }, this._view.id ? _("Pièce enregistrée") : _("Pièce créée"));
           this._resub();
@@ -989,6 +1134,30 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       .pmenu span { flex: 1; }
       /* tuiles */
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px; }
+      .dch { margin-top: 12px; border-radius: 18px; background: rgba(var(--ink), .04); box-shadow: inset 0 0 0 1px rgba(var(--ink), .07); overflow: hidden; }
+      .dch-h { width: 100%; display: flex; align-items: center; gap: 8px; padding: 11px 14px; color: var(--tx); text-align: left; }
+      .dch-h > ha-icon { --mdc-icon-size: 18px; color: var(--tx2); } .dch-h b { font-size: 13.5px; } .dch-h small { flex: 1; font-size: 12px; color: var(--tx2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .dch-h .chev { transition: transform .25s; } .dch-h .chev.up { transform: rotate(180deg); }
+      .dcb { padding: 2px 14px 12px 40px; }
+      .plot { position: relative; height: 170px; touch-action: pan-y; cursor: crosshair; }
+      .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+      .plot .sp { fill: none; stroke: var(--lc); stroke-width: 2.6; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+      .plot .rp { fill: none; stroke: var(--lc); stroke-width: 1.5; stroke-dasharray: 2 4; opacity: .75; vector-effect: non-scaling-stroke; }
+      .gy { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(var(--ink), .09); }
+      .gy em { position: absolute; right: calc(100% + 6px); top: -7px; font-style: normal; font-size: 10.5px; color: var(--tx2); white-space: nowrap; }
+      .dnow { position: absolute; top: -4px; bottom: 0; width: 2px; margin-left: -1px; border-radius: 2px; background: rgb(var(--acc)); box-shadow: 0 0 8px rgba(var(--acc), .7); }
+      .plot.hov::after { content: ""; position: absolute; top: 0; bottom: 0; left: var(--hx); border-left: 1px solid rgba(var(--ink), .35); pointer-events: none; }
+      .dtip { position: absolute; top: 4px; z-index: 3; min-width: 150px; padding: 8px 10px; border-radius: 12px; background: rgba(12,18,26,.94); color: #e8f1f5; font-size: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.35); pointer-events: none; }
+      :host([data-tone="light"]) .dtip { background: rgba(255,255,255,.97); color: #0f172a; }
+      .dtip .th { font-weight: 800; margin-bottom: 4px; } .dtip div:not(.th) { display: flex; align-items: center; gap: 6px; line-height: 1.6; }
+      .dtip i { width: 8px; height: 8px; border-radius: 50%; flex: none; } .dtip span { flex: 1; } .dtip b { font-variant-numeric: tabular-nums; } .dtip small { opacity: .65; min-width: 34px; text-align: right; }
+      .dhours { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--tx2); margin-top: 4px; }
+      .dleg { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0 -26px; }
+      .dl { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 16px; font-size: 12px; font-weight: 700; color: var(--tx); background: rgba(var(--ink), .06); transition: opacity .2s; user-select: none; }
+      .dl i { width: 9px; height: 9px; border-radius: 50%; } .dl.off { opacity: .4; } .dl.off i { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--tx2); }
+      .dl small { font-weight: 600; color: var(--tx2); } .dl.all { color: var(--tx2); } .dl.real { margin-left: auto; color: var(--tx2); } .dl.real.on { color: var(--tx); box-shadow: inset 0 0 0 1px rgba(var(--ink), .25); } .dl ha-icon { --mdc-icon-size: 14px; }
+      .dnote { margin: 8px 0 0 -26px; font-size: 11px; color: var(--tx2); }
+      @media (max-width: 500px) { .dcb { padding-left: 34px; padding-right: 10px; } .plot { height: 150px; } .dl.real { margin-left: 0; } }
       .tile { --tc: rgb(148,163,184); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 18px; text-align: left;
         background: linear-gradient(160deg, rgba(var(--ink), .07), rgba(var(--ink), .025)); box-shadow: inset 0 0 0 1px rgba(var(--ink), .07); transition: transform .2s, box-shadow .3s; }
       .anim .tile { animation: tin .45s cubic-bezier(.3,1.3,.5,1) backwards; animation-delay: calc(var(--i) * 45ms); }
@@ -1100,7 +1269,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
   class HolmClimatCardEditor extends HTMLElement {
     setConfig(config) { this._config = { ...config }; if (this._form) this._form.data = this._data(); }
     set hass(hass) { this._hass = hass; const _l = setLang(hass, this._config); if (this._form && _l !== this._lang) { this._form.remove(); this._form = null; } this._lang = _l; if (!this._form) { if (!this._building) { this._building = true; this._build().finally(() => (this._building = false)); } } else this._form.hass = hass; }
-    _data() { return { theme: "auto", ...this._config }; }
+    _data() { return { theme: "auto", day_chart: "collapsed", ...this._config }; }
     async _build() {
       let rooms = [];
       try { rooms = (await this._hass.callWS({ type: "climat_holm/data" })).rooms || []; } catch (e) { /* */ }
@@ -1110,9 +1279,10 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         langField(),
         { name: "title", selector: { text: {} } },
         { name: "rooms", selector: { select: { multiple: true, mode: "list", options: rooms.map((r) => ({ value: r.id, label: r.name })) } } },
+        { name: "day_chart", selector: { select: { mode: "dropdown", options: [{ value: "collapsed", label: _("Replié (s'ouvre d'un clic)") }, { value: "open", label: _("Ouvert") }, { value: "hide", label: _("Masqué") }] } } },
         { name: "theme", selector: { select: { mode: "dropdown", options: [{ value: "auto", label: _("Automatique (clair / sombre)") }, { value: "dark", label: _("Sombre") }, { value: "light", label: _("Clair") }, { value: "theme", label: _("Couleurs de mon thème") }] } } },
       ];
-      const L = { language: _("Langue"), title: _("Titre (vide = Chauffage / Climatisation)"), rooms: _("Pièces affichées (aucune cochée = toutes)"), theme: _("Apparence") };
+      const L = { language: _("Langue"), title: _("Titre (vide = Chauffage / Climatisation)"), rooms: _("Pièces affichées (aucune cochée = toutes)"), theme: _("Apparence"), day_chart: _("Graphique de la journée") };
       f.computeLabel = (s) => L[s.name] || s.name;
       f.data = this._data();
       f.addEventListener("value-changed", (e) => {
@@ -1120,6 +1290,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         if (!v.title) delete v.title;
         if (!v.rooms || !v.rooms.length) delete v.rooms;
         if (v.theme === "auto") delete v.theme;
+        if (!v.day_chart || v.day_chart === "collapsed") delete v.day_chart;
         if (!v.language) delete v.language;
         this._config = { type: this._config.type || "custom:holm-climat-card", ...v };
         this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));

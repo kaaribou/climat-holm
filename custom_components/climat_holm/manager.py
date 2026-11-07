@@ -16,6 +16,8 @@ from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    SENSOR_INTERVAL,
+    SENSOR_MAX_OFFSET,
     DAYS,
     DEFAULT_PROFILE,
     DEFAULT_SETTINGS,
@@ -172,6 +174,7 @@ class ClimatManager:
         room.setdefault("icon", "mdi:radiator")
         room.setdefault("climates", [])
         room.setdefault("temp_sensor", None)
+        room.setdefault("sensor_regulate", False)
         room.setdefault("windows", [])
         room.setdefault("mode", MODE_AUTO)
         room.setdefault("manual_temp", self.data["settings"]["manual_temp"])
@@ -371,7 +374,8 @@ class ClimatManager:
             if want["source"] == "paused":
                 rt["sig"] = None
                 continue
-            sig = (want["hvac"], want["temp"], tuple(sorted((want.get("opts") or {}).items())))
+            offs = self._sensor_offsets(room, want, now)
+            sig = (want["hvac"], want["temp"], tuple(sorted((want.get("opts") or {}).items())), tuple(sorted(offs.items())))
             if not force and rt.get("sig") == sig:
                 continue
             ok = await self._apply(room, want)
@@ -379,8 +383,49 @@ class ClimatManager:
                 rt["sig"] = sig
         self.notify()
 
+    def _sensor_temp(self, room: dict) -> float | None:
+        ts = room.get("temp_sensor")
+        st = self.hass.states.get(ts) if ts else None
+        if st is None or st.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+            return None
+        try:
+            return float(st.state)
+        except (TypeError, ValueError):
+            return None
+
+    def _sensor_offsets(self, room: dict, want: dict, now: datetime) -> dict:
+        """Correction par appareil = température lue par l'appareil − température de la sonde (#2).
+
+        Uniquement si « Ajuster la consigne d'après la sonde » est coché, que la pièce chauffe ou refroidit
+        selon son programme (pas en mode Manuel), et que les deux températures sont connues. Bornée à
+        ±SENSOR_MAX_OFFSET, arrondie au pas de l'appareil, et changée au plus toutes les SENSOR_INTERVAL secondes.
+        """
+        rt = self.runtime.setdefault(room["id"], {})
+        store: dict = rt.setdefault("offsets", {})
+        active = (room.get("sensor_regulate") and room.get("temp_sensor") and want.get("temp") is not None
+                  and want.get("hvac") not in ("off", *NO_TEMP_HVAC) and want.get("source") != "manual")
+        sensor = self._sensor_temp(room) if active else None
+        out: dict[str, float] = {}
+        for eid in room.get("climates") or []:
+            st = self.hass.states.get(eid)
+            dev = st.attributes.get("current_temperature") if st else None
+            if sensor is None or dev is None:
+                store.pop(eid, None)  # sonde ou appareil sans mesure : consigne normale
+                continue
+            step = float(st.attributes.get("target_temp_step") or 0.5)
+            cand = max(-SENSOR_MAX_OFFSET, min(SENSOR_MAX_OFFSET, float(dev) - sensor))
+            cand = round(round(cand / step) * step, 2)
+            prev = store.get(eid)
+            if prev is None or (abs(cand - prev["v"]) >= step and (now - prev["at"]).total_seconds() >= SENSOR_INTERVAL):
+                prev = store[eid] = {"v": cand, "at": now}
+            if prev["v"]:
+                out[eid] = prev["v"]
+        rt["sensor"] = {"temp": sensor, "offset": round(sum(out.values()) / len(out), 1) if out else 0.0} if active and sensor is not None else None
+        return out
+
     async def _apply(self, room: dict, want: dict) -> bool:
         ok = True
+        offs = (self.runtime.get(room["id"], {}).get("offsets") or {})
         for eid in room.get("climates") or []:
             st = self.hass.states.get(eid)
             if st is None or st.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
@@ -402,7 +447,10 @@ class ClimatManager:
                 # préréglage d'abord : certains appareils changent la consigne avec
                 for key in ("preset",):
                     await self._apply_opt(eid, key, opts.get(key))
-                temp = self._clamp(st, want["temp"]) if hvac not in NO_TEMP_HVAC else None
+                base = want["temp"]
+                if base is not None and eid in offs and offs[eid]["v"]:
+                    base = float(base) + float(offs[eid]["v"])   # sonde de la pièce (#2)
+                temp = self._clamp(st, base) if hvac not in NO_TEMP_HVAC else None
                 fresh = self.hass.states.get(eid) or st
                 cur_t = fresh.attributes.get("temperature")
                 if temp is not None and "temperature" in fresh.attributes and (cur_t is None or abs(float(cur_t) - temp) > 0.01):
@@ -465,7 +513,8 @@ class ClimatManager:
         if current is None and temps:
             current = round(sum(temps) / len(temps), 1)
         action = "heating" if "heating" in actions else "cooling" if "cooling" in actions else ("idle" if units_on else "off")
-        return {**want, "current": current, "humidity": hum, "action": action, "units_on": units_on}
+        return {**want, "current": current, "humidity": hum, "action": action, "units_on": units_on,
+                "sensor_adjust": rt.get("sensor")}
 
     # ------------------------------------------------------------ modifications
     async def async_changed(self, reapply: bool = True, retrack: bool = False) -> None:
