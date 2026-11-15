@@ -27,6 +27,7 @@ from .const import (
     DAYS,
     DOMAIN,
     MODE_AUTO,
+    PRESETS,
     MODE_MANUAL,
     MODE_OFF,
     SEASON_COOL,
@@ -165,6 +166,7 @@ async def do_room_action(hass: HomeAssistant, room_id: str, action: str, data: d
             raise HomeAssistantError("Mode inconnu")
         room["mode"] = mode
         room["override"] = None
+        room["preset"] = None
         if mode == MODE_MANUAL and data.get("temp") is not None:
             room["manual_temp"] = float(data["temp"])
     elif action == "temp":
@@ -178,6 +180,7 @@ async def do_room_action(hass: HomeAssistant, room_id: str, action: str, data: d
             until = data.get("until") or (nxt_at.isoformat() if nxt_at else (now + timedelta(hours=4)).isoformat())
             room["override"] = {"temp": temp, "until": until}
             room["boost_until"] = None
+            room["preset"] = None
     elif action == "boost":
         minutes = int(data.get("minutes") or s["boost_minutes"])
         room["boost_until"] = (now + timedelta(minutes=minutes)).isoformat() if minutes > 0 else None
@@ -202,9 +205,20 @@ async def do_room_action(hass: HomeAssistant, room_id: str, action: str, data: d
             room["manual_hvac"] = data["hvac"] if data["hvac"] in HVAC_CHOICES else None
         if "opts" in data:
             room["manual_opts"] = clean_opts(data["opts"])
+    elif action == "preset":
+        # préréglage de la pièce (#3) : remplace le planning jusqu'à ce qu'on l'annule ; None = retour au planning
+        preset = data.get("preset") or None
+        if preset is not None and preset not in PRESETS:
+            raise HomeAssistantError("Préréglage inconnu")
+        room["preset"] = preset
+        room["override"] = None
+        room["boost_until"] = None
+        if preset and room["mode"] == MODE_OFF:
+            room["mode"] = MODE_AUTO
     elif action == "cancel":
         room["override"] = None
         room["boost_until"] = None
+        room["preset"] = None
     else:
         raise HomeAssistantError(f"Action inconnue : {action}")
     await mgr.async_changed()
@@ -273,6 +287,14 @@ def _register_services(hass: HomeAssistant) -> None:
         for rid in _room_ids(call):
             await do_room_action(hass, rid, "cancel", {})
 
+    async def set_preset(call: ServiceCall) -> None:
+        mgr = _manager(hass)
+        targeted = call.data.get("entity_id") or call.data.get("room")
+        ids = _room_ids(call) if targeted else [r["id"] for r in mgr.data["rooms"]]
+        preset = call.data.get("preset")
+        for rid in ids:
+            await do_room_action(hass, rid, "preset", {"preset": None if preset == "none" else preset})
+
     async def set_profile(call: ServiceCall) -> None:
         await do_global(hass, {"profile": call.data["profile"]})
 
@@ -284,6 +306,7 @@ def _register_services(hass: HomeAssistant) -> None:
     hass.services.async_register(DOMAIN, "boost", boost, schema=vol.Schema({**target, vol.Optional("minutes"): vol.All(vol.Coerce(int), vol.Range(min=0, max=720))}))
     hass.services.async_register(DOMAIN, "next_slot", next_, schema=vol.Schema(target))
     hass.services.async_register(DOMAIN, "cancel_override", cancel, schema=vol.Schema(target))
+    hass.services.async_register(DOMAIN, "set_preset", set_preset, schema=vol.Schema({**target, vol.Required("preset"): vol.In([*PRESETS, "none"])}))
     hass.services.async_register(DOMAIN, "set_profile", set_profile, schema=vol.Schema({vol.Required("profile"): cv.string}))
     hass.services.async_register(DOMAIN, "set_away", set_away, schema=vol.Schema({vol.Optional("away", default=True): cv.boolean, vol.Optional("until"): cv.datetime}))
 
@@ -438,6 +461,7 @@ async def ws_schedule(hass, connection, msg) -> None:
     vol.Optional("minutes"): vol.Coerce(int),
     vol.Optional("hvac"): vol.Any(None, str),
     vol.Optional("opts"): vol.Any(None, dict),
+    vol.Optional("preset"): vol.Any(None, str),
 })
 @websocket_api.async_response
 @_wrap
@@ -511,7 +535,8 @@ async def ws_profile(hass, connection, msg) -> None:
 @_wrap
 async def ws_settings(hass, connection, msg) -> None:
     mgr = _manager(hass)
-    allowed = {"boost_temp": float, "boost_minutes": int, "away_temp": float, "cool_away_off": bool, "window_delay": int, "manual_temp": float, "comfort_temp": float}
+    allowed = {"boost_temp": float, "boost_minutes": int, "away_temp": float, "cool_away_off": bool, "window_delay": int, "manual_temp": float, "comfort_temp": float,
+               "eco_temp": float, "frost_temp": float, "cool_comfort_temp": float, "cool_eco_temp": float}
     for k, v in msg["settings"].items():
         if k in allowed and v is not None:
             mgr.settings[k] = allowed[k](v)

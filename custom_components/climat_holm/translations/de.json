@@ -30,7 +30,12 @@
           "away_temp": "Abwesenheitstemperatur",
           "cool_away_off": "Klimaanlage bei Abwesenheit ausschalten",
           "manual_temp": "Temperatur im manuellen Modus (Standard)",
-          "window_delay": "Verzögerung vor dem Ausschalten bei offenem Fenster"
+          "window_delay": "Verzögerung vor dem Ausschalten bei offenem Fenster",
+          "comfort_temp": "Voreinstellung Komfort (Heizen)",
+          "eco_temp": "Voreinstellung Eco (Heizen)",
+          "frost_temp": "Voreinstellung Frostschutz",
+          "cool_comfort_temp": "Voreinstellung Komfort (Kühlen)",
+          "cool_eco_temp": "Voreinstellung Eco (Kühlen)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Raum"
+        "name": "Raum",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Zeitplan",
+              "comfort": "Komfort",
+              "eco": "Eco",
+              "frost": "Frostschutz",
+              "away": "Abwesend",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Bis",
           "description": "Rückkehrdatum und -uhrzeit (optional)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Voreinstellung",
+      "description": "Wendet eine Voreinstellung (Komfort, Eco, Frostschutz, Abwesend) auf einen oder mehrere Räume an, oder auf alle, wenn keiner angegeben ist. „none“ kehrt zum Zeitplan zurück.",
+      "fields": {
+        "entity_id": {
+          "name": "Raum",
+          "description": "Climat-HOLM-Raumthermostate (leer = alle Räume)."
+        },
+        "room": {
+          "name": "Raumname",
+          "description": "Alternative zur Entität."
+        },
+        "preset": {
+          "name": "Voreinstellung",
+          "description": "comfort, eco, frost, away oder none für den Zeitplan."
         }
       }
     }

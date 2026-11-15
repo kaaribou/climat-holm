@@ -53,3 +53,24 @@ set_away:
     until:
       selector:
         datetime:
+set_preset:
+  fields:
+    entity_id:
+      selector:
+        entity:
+          integration: climat_holm
+          domain: climate
+          multiple: true
+    room:
+      selector:
+        text:
+    preset:
+      required: true
+      selector:
+        select:
+          options:
+            - comfort
+            - eco
+            - frost
+            - away
+            - none

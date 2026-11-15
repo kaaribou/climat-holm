@@ -5,7 +5,7 @@ from typing import Final
 
 DOMAIN: Final = "climat_holm"
 NAME: Final = "Climat HOLM"
-VERSION: Final = "1.3.0"
+VERSION: Final = "1.4.0"
 
 CARD_FILENAME: Final = "holm-climat-card.js"
 CARD_URL_PATH: Final = "/climat_holm/holm-climat-card.js"
@@ -31,7 +31,14 @@ DEFAULT_SETTINGS: Final = {
     "window_delay": 60,
     "manual_temp": 19.5,
     "comfort_temp": 19.5,
+    "eco_temp": 17.0,
+    "frost_temp": 7.0,
+    "cool_comfort_temp": 24.0,
+    "cool_eco_temp": 26.0,
 }
+
+# Préréglages des thermostats de pièce (#3), utilisables même si l'appareil n'en a pas
+PRESETS: Final = ["comfort", "eco", "frost", "away"]
 
 DEFAULT_PROFILE: Final = "Normal"
 

@@ -30,7 +30,12 @@
           "away_temp": "Away temperature",
           "cool_away_off": "Turn the A/C off while away",
           "manual_temp": "Manual mode temperature (default)",
-          "window_delay": "Delay before stopping when a window is open"
+          "window_delay": "Delay before stopping when a window is open",
+          "comfort_temp": "Comfort preset (heating)",
+          "eco_temp": "Eco preset (heating)",
+          "frost_temp": "Frost protection preset",
+          "cool_comfort_temp": "Comfort preset (cooling)",
+          "cool_eco_temp": "Eco preset (cooling)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Room"
+        "name": "Room",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Schedule",
+              "comfort": "Comfort",
+              "eco": "Eco",
+              "frost": "Frost protection",
+              "away": "Away",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Until",
           "description": "Return date and time (optional)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Preset",
+      "description": "Applies a preset (Comfort, Eco, Frost protection, Away) to one or more rooms, or to all of them if none is given. “none” goes back to the schedule.",
+      "fields": {
+        "entity_id": {
+          "name": "Room",
+          "description": "Climat HOLM room thermostats (empty = all rooms)."
+        },
+        "room": {
+          "name": "Room name",
+          "description": "Alternative to the entity."
+        },
+        "preset": {
+          "name": "Preset",
+          "description": "comfort, eco, frost, away, or none to go back to the schedule."
         }
       }
     }

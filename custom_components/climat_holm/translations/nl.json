@@ -30,7 +30,12 @@
           "away_temp": "Afwezigheidstemperatuur",
           "cool_away_off": "Airco uitzetten bij afwezigheid",
           "manual_temp": "Temperatuur handmatige modus (standaard)",
-          "window_delay": "Vertraging vóór uitschakelen als een raam open is"
+          "window_delay": "Vertraging vóór uitschakelen als een raam open is",
+          "comfort_temp": "Voorinstelling Comfort (verwarmen)",
+          "eco_temp": "Voorinstelling Eco (verwarmen)",
+          "frost_temp": "Voorinstelling Vorstbeveiliging",
+          "cool_comfort_temp": "Voorinstelling Comfort (koelen)",
+          "cool_eco_temp": "Voorinstelling Eco (koelen)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Kamer"
+        "name": "Kamer",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Planning",
+              "comfort": "Comfort",
+              "eco": "Eco",
+              "frost": "Vorstbeveiliging",
+              "away": "Afwezig",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Tot",
           "description": "Datum en tijd van terugkomst (optioneel)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Voorinstelling",
+      "description": "Past een voorinstelling (Comfort, Eco, Vorstbeveiliging, Afwezig) toe op een of meer ruimtes, of op alle als er geen is opgegeven. ‘none’ gaat terug naar de planning.",
+      "fields": {
+        "entity_id": {
+          "name": "Ruimte",
+          "description": "Climat HOLM-thermostaten van de ruimtes (leeg = alle ruimtes)."
+        },
+        "room": {
+          "name": "Naam van de ruimte",
+          "description": "Alternatief voor de entiteit."
+        },
+        "preset": {
+          "name": "Voorinstelling",
+          "description": "comfort, eco, frost, away, of none om terug te gaan naar de planning."
         }
       }
     }

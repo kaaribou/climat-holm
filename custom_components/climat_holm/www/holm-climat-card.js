@@ -226,8 +226,25 @@
     "Ouvert": ["Open", "Geöffnet", "Abierto", "Aperto", "Open", "Aberto", "Otwarty"],
     "Masqué": ["Hidden", "Ausgeblendet", "Oculto", "Nascosto", "Verborgen", "Oculto", "Ukryty"],
     "Graphique de la journée": ["Day chart", "Tagesdiagramm", "Gráfico del día", "Grafico del giorno", "Dagdiagram", "Gráfico do dia", "Wykres dnia"],
+    "Préréglage": ["Preset", "Voreinstellung", "Preajuste", "Preimpostazione", "Voorinstelling", "Predefinição", "Ustawienie"],
+    "Confort": ["Comfort", "Komfort", "Confort", "Comfort", "Comfort", "Conforto", "Komfort"],
+    "Éco": ["Eco", "Eco", "Eco", "Eco", "Eco", "Eco", "Eko"],
+    "Hors-gel": ["Frost protection", "Frostschutz", "Antiheladas", "Antigelo", "Vorstbeveiliging", "Antigelo", "Ochrona przed mrozem"],
+    "Absent": ["Away", "Abwesend", "Ausente", "Assente", "Afwezig", "Ausente", "Nieobecny"],
+    "{p} · {v}": ["{p} · {v}", "{p} · {v}", "{p} · {v}", "{p} · {v}", "{p} · {v}", "{p} · {v}", "{p} · {v}"],
+    "Préréglage {p}": ["{p} preset", "Voreinstellung {p}", "Preajuste {p}", "Preimpostazione {p}", "Voorinstelling {p}", "Predefinição {p}", "Ustawienie {p}"],
+    "Touchez un préréglage pour remplacer le planning ; touchez-le de nouveau pour revenir au planning": ["Tap a preset to replace the schedule; tap it again to go back to the schedule", "Tippen Sie auf eine Voreinstellung, um den Zeitplan zu ersetzen; erneut tippen, um zum Zeitplan zurückzukehren", "Toque un preajuste para sustituir la programación; tóquelo de nuevo para volver a ella", "Tocca una preimpostazione per sostituire la programmazione; toccala di nuovo per tornarci", "Tik op een voorinstelling om de planning te vervangen; tik er opnieuw op om terug te gaan naar de planning", "Toque numa predefinição para substituir a programação; toque de novo para voltar a ela", "Dotknij ustawienia, aby zastąpić harmonogram; dotknij ponownie, aby wrócić do harmonogramu"],
+    "Préréglage Confort (chauffage)": ["Comfort preset (heating)", "Voreinstellung Komfort (Heizen)", "Preajuste Confort (calefacción)", "Preimpostazione Comfort (riscaldamento)", "Voorinstelling Comfort (verwarmen)", "Predefinição Conforto (aquecimento)", "Ustawienie Komfort (ogrzewanie)"],
+    "Préréglage Éco (chauffage)": ["Eco preset (heating)", "Voreinstellung Eco (Heizen)", "Preajuste Eco (calefacción)", "Preimpostazione Eco (riscaldamento)", "Voorinstelling Eco (verwarmen)", "Predefinição Eco (aquecimento)", "Ustawienie Eko (ogrzewanie)"],
+    "Préréglage Hors-gel": ["Frost protection preset", "Voreinstellung Frostschutz", "Preajuste Antiheladas", "Preimpostazione Antigelo", "Voorinstelling Vorstbeveiliging", "Predefinição Antigelo", "Ustawienie Ochrona przed mrozem"],
+    "Préréglage Confort (clim)": ["Comfort preset (cooling)", "Voreinstellung Komfort (Kühlen)", "Preajuste Confort (refrigeración)", "Preimpostazione Comfort (raffrescamento)", "Voorinstelling Comfort (koelen)", "Predefinição Conforto (arrefecimento)", "Ustawienie Komfort (chłodzenie)"],
+    "Préréglage Éco (clim)": ["Eco preset (cooling)", "Voreinstellung Eco (Kühlen)", "Preajuste Eco (refrigeración)", "Preimpostazione Eco (raffrescamento)", "Voorinstelling Eco (koelen)", "Predefinição Eco (arrefecimento)", "Ustawienie Eko (chłodzenie)"],
+    "Préréglages": ["Presets", "Voreinstellungen", "Preajustes", "Preimpostazioni", "Voorinstellingen", "Predefinições", "Ustawienia"],
+    "Préréglage annulé": ["Preset cancelled", "Voreinstellung aufgehoben", "Preajuste cancelado", "Preimpostazione annullata", "Voorinstelling geannuleerd", "Predefinição cancelada", "Ustawienie anulowane"],
   };
   let LANG = "fr", NUMLOC = "fr-FR";
+  // préréglages des pièces (#3) : la température vient des réglages (Confort / Éco, chauffage et clim ; hors-gel et absence)
+  const PRESET_DEF = { comfort: { l: "Confort", i: "mdi:sofa-outline" }, eco: { l: "Éco", i: "mdi:leaf" }, frost: { l: "Hors-gel", i: "mdi:snowflake-thermometer" }, away: { l: "Absent", i: "mdi:home-export-outline" } };
   const langOf = (hass, c) => { const l = String((c && c.language) || (hass && ((hass.locale && hass.locale.language) || hass.language)) || navigator.language || "en").toLowerCase().split(/[-_]/)[0]; return l === "fr" || HOLM_LANGS.includes(l) ? l : "en"; };
   const setLang = (hass, c) => { LANG = langOf(hass, c); const p = hass && hass.locale && hass.locale.language; NUMLOC = !(c && c.language) && p && p.toLowerCase().startsWith(LANG) ? p : LOCALES[LANG]; return LANG; };
   const _ = (s, v) => { let o = LANG === "fr" ? s : ((I18N[s] && I18N[s][HOLM_LANGS.indexOf(LANG)]) || s); if (v) for (const k in v) o = o.split("{" + k + "}").join(v[k]); return o; };
@@ -238,7 +255,7 @@
     if (o.selector && o.selector.select && o.name !== "language") o.selector = { ...o.selector, select: { ...o.selector.select, options: (o.selector.select.options || []).map((op) => (typeof op === "string" ? op : { ...op, label: _(op.label) })) } };
     if (o.name === "language" && o.selector && o.selector.select) o.selector = { ...o.selector, select: { ...o.selector.select, options: o.selector.select.options.map((op) => (op.value ? op : { ...op, label: _("Automatique (profil)") })) } };
     return o; });
-  const VERSION = "1.3.0";
+  const VERSION = "1.4.0";
   const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof v === "string" ? _(v) : v && typeof v === "object" ? _T(v) : v; } });
   const DAY_S_RAW = { mon: _("Lun"), tue: _("Mar"), wed: _("Mer"), thu: _("Jeu"), fri: _("Ven"), sat: _("Sam"), sun: _("Dim") };
@@ -674,6 +691,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
         case "boost": return { t: _("Boost · encore {t}", { t: left(s.until) }), i: "mdi:rocket-launch-outline", c: "hot" };
         case "away": return { t: `${_("Absence")}${s.temp != null ? " · " + fmtT(s.temp) + "°" : ""}${s.until ? _(" jusqu'à {t}", { t: at(s.until) }) : ""}`, i: "mdi:home-export-outline", c: "warn" };
         case "manual": return { t: _("Manuel · {v}", { v: this._val(s.hvac, s.temp) }), i: "mdi:hand-back-right-outline", c: "" };
+        case "preset": return { t: _("{p} · {v}", { p: _(PRESET_DEF[s.preset]?.l || ""), v: s.hvac === "off" ? _("Arrêt") : this._val(s.hvac, s.temp) }), i: PRESET_DEF[s.preset]?.i || "mdi:tune", c: "" };
         case "override": return { t: _("{v} jusqu'à {t} (dérogation)", { v: this._val(s.hvac, s.temp), t: at(s.until) }), i: "mdi:timer-sand", c: "hot" };
         default: {
           const now = this._val(s.hvac, s.temp);
@@ -708,7 +726,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       const week = this._week(room);
       const tgt = room.mode === "manual" ? room.manual_temp : s.temp != null ? s.temp : (s.slot_temp ?? this._data.settings.comfort_temp);
       const act = s.action === "heating" ? "heating" : s.action === "cooling" ? "cooling" : "";
-      const special = s.source === "override" || s.source === "boost";
+      const special = s.source === "override" || s.source === "boost" || s.source === "preset";
       const off = s.hvac === "off", noTemp = s.hvac === "fan_only" || (room.mode === "manual" && room.manual_hvac === "fan_only");
       const caps = this._caps(room);
       const optsTxt = !off ? this._optsTxt(s.opts, caps) : "";
@@ -726,6 +744,7 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
           </div>
         </div>
         <div class="seg3">${[["auto", "mdi:calendar-clock", _("Auto")], ["manual", "mdi:hand-back-right-outline", _("Manuel")], ["off", "mdi:power", _("Arrêt")]].map(([k, ic, l]) => `<button data-a="mode" data-v="${k}" class="${room.mode === k ? "on" : ""}"><ha-icon icon="${ic}"></ha-icon>${l}</button>`).join("")}</div>
+        <div class="presets" title="${_("Touchez un préréglage pour remplacer le planning ; touchez-le de nouveau pour revenir au planning")}">${Object.entries(PRESET_DEF).map(([k, p]) => `<button class="chip${room.preset === k ? " on" : ""}" data-a="preset" data-v="${k}"${room.mode === "off" ? " disabled" : ""}><ha-icon icon="${p.i}"></ha-icon>${_(p.l)}</button>`).join("")}</div>
         ${room.mode === "manual" ? `<div class="sec"><ha-icon icon="mdi:hand-back-right-outline"></ha-icon>${_("Mode manuel")}</div>${this._modePicker(caps, room.manual_hvac, "mhvac")}${this._optPicker(caps, room.manual_opts || {}, "mopt")}` : ""}
         <div class="acts">
           ${s.source === "boost" ? `<button class="act on hot" data-a="cancel"><ha-icon icon="mdi:rocket-launch"></ha-icon>${_("Arrêter le boost")}</button>` : `<button class="act" data-a="boost"${room.mode === "off" ? " disabled" : ""}><ha-icon icon="mdi:rocket-launch-outline"></ha-icon>${_("Boost {n} min", { n: this._data.settings.boost_minutes })}</button>`}
@@ -848,9 +867,21 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
           ] },
           { name: "window_delay", selector: { number: { min: 0, max: 1800, step: 10, mode: "box", unit_of_measurement: "s" } } },
           { name: "cool_away_off", selector: { boolean: {} } },
+          { type: "expandable", name: "", title: _("Préréglages"), icon: "mdi:tune", schema: [
+            { type: "grid", name: "", schema: [
+              { name: "comfort_temp", selector: { number: { min: 5, max: 30, step: 0.5, mode: "box", unit_of_measurement: "°C" } } },
+              { name: "eco_temp", selector: { number: { min: 5, max: 30, step: 0.5, mode: "box", unit_of_measurement: "°C" } } },
+              { name: "frost_temp", selector: { number: { min: 5, max: 15, step: 0.5, mode: "box", unit_of_measurement: "°C" } } },
+            ] },
+            { type: "grid", name: "", schema: [
+              { name: "cool_comfort_temp", selector: { number: { min: 16, max: 32, step: 0.5, mode: "box", unit_of_measurement: "°C" } } },
+              { name: "cool_eco_temp", selector: { number: { min: 16, max: 32, step: 0.5, mode: "box", unit_of_measurement: "°C" } } },
+            ] },
+          ] },
         ];
         f.data = { ...s };
         const L = { boost_temp: _("Température du boost"), boost_minutes: _("Durée du boost"), away_temp: _("Température en absence"), manual_temp: _("Mode manuel (par défaut)"), window_delay: _("Délai avant arrêt si fenêtre ouverte"), cool_away_off: _("Arrêter la clim pendant une absence") };
+        Object.assign(L, { comfort_temp: _("Préréglage Confort (chauffage)"), eco_temp: _("Préréglage Éco (chauffage)"), frost_temp: _("Préréglage Hors-gel"), cool_comfort_temp: _("Préréglage Confort (clim)"), cool_eco_temp: _("Préréglage Éco (clim)") });
         f.computeLabel = (x) => L[x.name] || x.name;
       } else {
         const room = this._view.id ? this._room(this._view.id) : null;
@@ -932,6 +963,10 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
           return;
         }
         case "boost": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "boost" }, _("Boost lancé"));
+        case "preset": {
+          const v = room.preset === b.dataset.v ? null : b.dataset.v;
+          return this._ws({ type: "climat_holm/action", room_id: room.id, action: "preset", preset: v }, v ? _("Préréglage {p}", { p: _(PRESET_DEF[v].l) }) : _("Préréglage annulé"));
+        }
         case "next": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "next_slot" }, _("Créneau suivant appliqué"));
         case "cancel": return this._ws({ type: "climat_holm/action", room_id: room.id, action: "cancel" }, _("Retour au planning"));
         case "day": {
@@ -1109,7 +1144,11 @@ const _T = (o) => new Proxy(o, { get: (t, k) => { const v = t[k]; return typeof 
       .tgl { flex: none; position: relative; width: 50px; height: 28px; border-radius: 14px; background: rgba(var(--ink), .14); transition: background .3s; }
       .tgl i { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); transition: transform .35s cubic-bezier(.3,1.5,.5,1); }
       .tgl.on { background: linear-gradient(90deg, #22c55e, #16a34a); } .tgl.on i { transform: translateX(22px); }
-      .chips, .profiles, .copy, .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .chips, .profiles, .copy, .acts, .presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .presets { margin-top: 10px; }
+      .presets .chip { flex: 1 1 0; justify-content: center; min-width: 0; }
+      .presets .chip.on { color: #fff; background: rgb(var(--acc)); box-shadow: 0 4px 14px -6px rgb(var(--acc)); }
+      .presets .chip[disabled] { opacity: .45; }
       .profiles > ha-icon { --mdc-icon-size: 18px; color: var(--tx2); }
       .seg2, .seg3 { display: flex; padding: 3px; border-radius: 14px; background: rgba(var(--ink), .06); box-shadow: inset 0 0 0 1px rgba(var(--ink), .06); }
       .seg3 { display: grid; grid-template-columns: repeat(3, 1fr); }

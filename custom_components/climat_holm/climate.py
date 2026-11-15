@@ -11,7 +11,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import slugify
 
-from .const import DOMAIN, MODE_AUTO, MODE_MANUAL, MODE_OFF, SEASON_COOL, VERSION
+from .const import DOMAIN, MODE_AUTO, MODE_MANUAL, MODE_OFF, PRESETS, SEASON_COOL, VERSION
 from .entity import ClimatEntity
 
 PRESET_NONE = "none"
@@ -28,7 +28,8 @@ class RoomClimate(ClimatEntity, ClimateEntity):
     _attr_target_temperature_step = 0.5
     _attr_min_temp = 5
     _attr_max_temp = 30
-    _attr_preset_modes = [PRESET_NONE, PRESET_BOOST]
+    # préréglages (#3) : utilisables même quand l'appareil réel n'en a aucun
+    _attr_preset_modes = [PRESET_NONE, *PRESETS, PRESET_BOOST]
     _attr_translation_key = "room"
     _enable_turn_on_off_backwards_compatibility = False
 
@@ -98,7 +99,9 @@ class RoomClimate(ClimatEntity, ClimateEntity):
 
     @property
     def preset_mode(self) -> str:
-        return PRESET_BOOST if self.room.get("boost_until") else PRESET_NONE
+        if self.room.get("boost_until"):
+            return PRESET_BOOST
+        return self.room.get("preset") if self.room.get("preset") in PRESETS else PRESET_NONE
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -135,4 +138,9 @@ class RoomClimate(ClimatEntity, ClimateEntity):
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         from .core import do_room_action
 
-        await do_room_action(self.hass, self.room_id, "boost" if preset_mode == PRESET_BOOST else "cancel", {})
+        if preset_mode == PRESET_BOOST:
+            await do_room_action(self.hass, self.room_id, "boost", {})
+        elif preset_mode in PRESETS:
+            await do_room_action(self.hass, self.room_id, "preset", {"preset": preset_mode})
+        else:
+            await do_room_action(self.hass, self.room_id, "cancel", {})

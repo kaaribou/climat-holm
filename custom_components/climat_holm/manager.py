@@ -23,6 +23,7 @@ from .const import (
     DEFAULT_SETTINGS,
     DEFAULT_WEEK,
     MODE_AUTO,
+    PRESETS,
     MODE_MANUAL,
     MODE_OFF,
     SEASON_COOL,
@@ -181,6 +182,7 @@ class ClimatManager:
         room.setdefault("schedules", {})
         room.setdefault("override", None)
         room.setdefault("boost_until", None)
+        room.setdefault("preset", None)
         room.setdefault("opts", {})
         if room.get("fan_mode") and "fan" not in room["opts"]:
             room["opts"]["fan"] = room["fan_mode"]
@@ -353,6 +355,9 @@ class ClimatManager:
             if season == SEASON_COOL and s.get("cool_away_off", True):
                 return on(None, "away", g.get("away_until"))
             return on(float(s["away_temp"]), "away", g.get("away_until"))
+        if room.get("preset") in PRESETS:
+            out["preset"] = room["preset"]
+            return on(self.preset_temp(room["preset"], season), "preset")
         if room.get("mode") == MODE_MANUAL:
             return on(float(room.get("manual_temp") or s["manual_temp"]), "manual",
                       hvac=room.get("manual_hvac"), opts=room.get("manual_opts"), off=False)
@@ -363,6 +368,19 @@ class ClimatManager:
             return on(ov.get("temp"), "override", ov.get("until"), hvac=ov.get("hvac", cur_hvac),
                       opts=ov.get("opts", cur_opts), off=False)
         return on(slot_value(cur), "schedule", nxt_at, hvac=cur_hvac, opts=cur_opts, off=not cur_on)
+
+    def preset_temp(self, preset: str, season: str | None = None) -> float | None:
+        """Consigne d'un préréglage selon la saison (None = arrêt : hors-gel et absence en été)."""
+        s = self.settings
+        if (season or self.glob.get("season")) == SEASON_COOL:
+            if preset == "comfort":
+                return float(s["cool_comfort_temp"])
+            if preset == "eco":
+                return float(s["cool_eco_temp"])
+            if preset == "away" and not s.get("cool_away_off", True):
+                return float(s["cool_eco_temp"])
+            return None
+        return float(s[{"comfort": "comfort_temp", "eco": "eco_temp", "frost": "frost_temp", "away": "away_temp"}[preset]])
 
     # ------------------------------------------------------------ pilotage
     async def async_evaluate(self, force: bool = False) -> None:
@@ -418,14 +436,23 @@ class ClimatManager:
             prev = store.get(eid)
             if prev is None or (abs(cand - prev["v"]) >= step and (now - prev["at"]).total_seconds() >= SENSOR_INTERVAL):
                 prev = store[eid] = {"v": cand, "at": now}
-            if prev["v"]:
-                out[eid] = prev["v"]
+            v = prev["v"]
+            # sécurité de sens (#3) : tant que la pièce n'a pas atteint la consigne, la correction ne doit jamais
+            # freiner l'appareil (un split au mur lit souvent trop bas au démarrage) : pas de baisse en chauffe,
+            # pas de hausse en clim.
+            if want["hvac"] == "heat" and sensor < want["temp"]:
+                v = max(v, 0.0)
+            elif want["hvac"] == "cool" and sensor > want["temp"]:
+                v = min(v, 0.0)
+            if v:
+                out[eid] = v
         rt["sensor"] = {"temp": sensor, "offset": round(sum(out.values()) / len(out), 1) if out else 0.0} if active and sensor is not None else None
+        rt["applied"] = out   # corrections réellement envoyées (après la sécurité de sens)
         return out
 
     async def _apply(self, room: dict, want: dict) -> bool:
         ok = True
-        offs = (self.runtime.get(room["id"], {}).get("offsets") or {})
+        offs = (self.runtime.get(room["id"], {}).get("applied") or {})
         for eid in room.get("climates") or []:
             st = self.hass.states.get(eid)
             if st is None or st.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
@@ -448,8 +475,8 @@ class ClimatManager:
                 for key in ("preset",):
                     await self._apply_opt(eid, key, opts.get(key))
                 base = want["temp"]
-                if base is not None and eid in offs and offs[eid]["v"]:
-                    base = float(base) + float(offs[eid]["v"])   # sonde de la pièce (#2)
+                if base is not None and offs.get(eid):
+                    base = float(base) + float(offs[eid])   # sonde de la pièce (#2), sécurité de sens (#3)
                 temp = self._clamp(st, base) if hvac not in NO_TEMP_HVAC else None
                 fresh = self.hass.states.get(eid) or st
                 cur_t = fresh.attributes.get("temperature")

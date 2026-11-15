@@ -36,7 +36,13 @@ Climat HOLM is a **Home Assistant** integration that drives your heaters, heat p
 
 *Screenshots in French — the card follows the language of your Home Assistant profile.*
 
-### 🆕 What's new in 1.3.0
+### 🆕 What's new in 1.4.0
+
+- 🎚️ **Comfort, Eco, Frost protection and Away presets** ([#3](https://github.com/kaaribou/climat-holm/issues/3), idea by Mimic33): in each room, and on its `climate.holm_<room>` thermostat, even if the real device has no presets. No need for a virtual thermostat just for that. Temperatures in the settings, for heating and cooling. See [Presets](#presets).
+- 🌡️ **The sensor correction no longer holds back start-up** ([#3](https://github.com/kaaribou/climat-holm/issues/3)): until the room reaches its setpoint, the setpoint sent is never lowered when heating (nor raised when cooling). A wall-mounted A/C that reads too low when it starts therefore heats at full power. See [Adjust the setpoint from the sensor](#adjust-the-setpoint-from-the-sensor).
+- 🧭 New `climat_holm.set_preset` action, for one room or the whole home.
+
+### What's new in 1.3.0
 
 - 🌡️ **Setpoint adjusted from the sensor** ([#2](https://github.com/kaaribou/climat-holm/issues/2), idea by olivr2s): an A/C unit or a radiator often measures the room temperature badly. Tick **Adjust the devices' setpoint from the sensor** in a room's settings: Climat HOLM corrects the setpoint sent by the gap between the device's thermometer and the sensor. See [Adjust the setpoint from the sensor](#adjust-the-setpoint-from-the-sensor).
 - 📈 **Today's schedule**: below the rooms, a chart shows each room's setpoint from 0:00 to 24:00, with the current time, details on hover and, optionally, the actual temperature. A click on a room in the legend hides it, a double-click shows only that one. See [Today's schedule](#todays-schedule).
@@ -83,7 +89,7 @@ Climat HOLM is a **Home Assistant** integration that drives your heaters, heat p
 ## Getting started
 
 1. **Settings → Devices & services → Add integration → Climat HOLM.**
-2. Optionally choose your devices (one room is created per device) and, if you use Climate Scheduler, tick **Import my schedules**.
+2. Optionally choose your devices (one room is created per device) and, if you use Climate Scheduler, tick **Import my schedules**. You can also import them later: card → ⚙️ **Settings** → **Import from Climate Scheduler**. Only Climate Scheduler is imported; with another tool (Scheduler, automations…), recreate your slots in the card.
 3. Leave **“Turn scheduling on right away”** unticked if you want to check everything first: while scheduling is paused, Climat HOLM **controls no device**.
 4. Add the **Climat HOLM** card to a dashboard from the card picker:
 
@@ -126,9 +132,27 @@ The chart shows at a glance today's schedule of every room, in the active profil
 
 - Temperature gauge, **setpoint +/-**: the new setpoint lasts until the next slot, then the schedule resumes.
 - **Auto** (schedule), **Manual** (fixed setpoint, with its own mode and options) or **Off**.
+- **Presets**: Comfort, Eco, Frost protection, Away (see below).
 - **Boost** (adjustable duration), **Next slot**, **Back to schedule**.
 - The week as timelines; tap a day to edit it. The cog opens the room settings: name, icon, devices, sensor (and setpoint adjustment from the sensor), windows, device default options.
 - Below the timelines, the sensor used and, if the adjustment is on, the current correction.
+
+### Presets
+
+Below Auto / Manual / Off, a row of buttons applies a preset to the room, even if the real device offers none:
+
+| Button | Heating | Cooling |
+|---|---|---|
+| 🛋️ **Comfort** | Comfort temperature (19.5 °C by default) | Cooling comfort (24 °C) |
+| 🍃 **Eco** | Eco temperature (17 °C) | Cooling eco (26 °C) |
+| ❄️ **Frost protection** | Frost protection temperature (7 °C) | Off |
+| 🚪 **Away** | Away temperature (16 °C) | Off (or cooling eco if “Turn the A/C off while away” is unticked) |
+
+- The preset **replaces the schedule** until you cancel it: tap the lit button again, or **Back to schedule**. Changing the mode (Auto / Manual / Off) or the setpoint also cancels it.
+- The room's status line and its tile show it (“Eco · 17.0°”).
+- Temperatures are set in **Settings** (⚙️ → *Presets*), once for all rooms.
+- The `climate.holm_<room>` thermostat offers the same presets (plus Boost): you can pick them from a thermostat card, by voice or in an automation, and the `climat_holm.set_preset` action applies them to one room or to all.
+- Priority: open window, off, boost and global away come before the preset; the preset comes before Manual mode, temporary setpoints and the schedule.
 
 ### Adjust the setpoint from the sensor
 
@@ -137,6 +161,10 @@ An A/C unit measures the temperature near its indoor unit (often high on the wal
 > setpoint sent to the device = scheduled setpoint + (temperature read by the device − sensor temperature)
 
 **Example**: scheduled 21 °C, the A/C reads 22.5 °C but the sensor 21 °C. The A/C receives 22.5 °C and so stops when the room really is at 21 °C. For a radiator reading 18.5 °C when the room is at 19.5 °C, the setpoint is lowered by 1 °C.
+
+**Never holding back start-up** (1.4.0): a wall-mounted A/C often reads too low when it starts (its thermometer is near the cold wall). The formula would then lower the setpoint and the A/C would start sluggishly. Now, **until the room reaches its setpoint, the setpoint sent is never lowered when heating, nor raised when cooling**. The correction then only makes the device work harder, or stop at the right time once the room is warm enough.
+
+> Example: scheduled 19 °C, the A/C reads 13.5 °C and the sensor 16 °C. Before, the A/C received 16.5 °C; now it receives 19 °C. Once the room goes above 19 °C, the correction works as usual again.
 
 To stay simple and keep the device from changing all the time:
 - the correction is limited to **±3 °C** and rounded to the device's step (often 0.5 °C);
@@ -194,7 +222,7 @@ Climat HOLM only sends a command when something changes, and respects each devic
 
 | Entity | Role |
 |---|---|
-| `climate.holm_<room>` | Room thermostat: Auto / season / Off, setpoint, Boost preset. Attributes: source, override end, next change, open window, profile |
+| `climate.holm_<room>` | Room thermostat: Auto / season / Off, setpoint, Comfort, Eco, Frost protection, Away and Boost presets. Attributes: source, override end, next change, open window, profile |
 | `switch.climat_holm_programmation` | Turns all scheduling on / pauses it |
 | `switch.climat_holm_absence` | Away mode |
 | `switch.climat_holm_tout_arreter` | General stop |
@@ -210,8 +238,17 @@ Climat HOLM only sends a command when something changes, and respects each devic
 | `climat_holm.boost` | Boost one or more rooms (`minutes`, 0 to stop) |
 | `climat_holm.next_slot` | Skips to the next slot |
 | `climat_holm.cancel_override` | Back to the schedule |
+| `climat_holm.set_preset` | Applies a preset (`comfort`, `eco`, `frost`, `away`, or `none` to go back to the schedule) to one or more rooms, or to all of them if none is given |
 | `climat_holm.set_profile` | Changes profile |
 | `climat_holm.set_away` | Turns away mode on / off (with an optional end date) |
+
+Example: the whole home in Eco.
+
+```yaml
+action: climat_holm.set_preset
+data:
+  preset: eco
+```
 
 Example: switch to the Holidays profile when leaving.
 
@@ -234,6 +271,8 @@ From the card (⚙️) or **Settings → Devices & services → Climat HOLM → 
 | Manual mode setpoint | 19.5 °C |
 | Delay before stopping if a window is open | 60 s |
 | Turn the A/C off while away | yes |
+| Comfort · Eco · Frost protection presets (heating) | 19.5 · 17 · 7 °C |
+| Comfort · Eco presets (cooling) | 24 · 26 °C |
 
 ---
 
@@ -246,6 +285,8 @@ From the card (⚙️) or **Settings → Devices & services → Climat HOLM → 
 | An option doesn't show | The card only shows the modes and options the device reports to Home Assistant. |
 | A heater stops in A/C season | Normal: a device that can't cool is stopped in A/C season, unless the slot forces a mode it knows (Heat). |
 | The room doesn't reach the right temperature although the device thinks it has | Add a sensor to the room and tick **Adjust the devices' setpoint from the sensor**. |
+| My A/C starts sluggishly with the sensor correction | Fixed in 1.4.0: the setpoint is no longer lowered until the room reaches its temperature. |
+| Import my Climate Scheduler schedules after installing | Card → ⚙️ **Settings** → **Import from Climate Scheduler** button (at the bottom). It only shows if the Climate Scheduler integration is installed. Other tools (Scheduler, automations…) are not imported: recreate the slots in the card, it's quick. |
 | The sensor correction doesn't move | Normal for 10 minutes after a change, and while the gap moves by less than one device step. It is inactive in Manual mode and when off. |
 | The new card version doesn't show | Clear the cache (Ctrl + F5, or “Reload resources” in the mobile app). |
 
@@ -265,4 +306,4 @@ Code: **MIT** license — © kaaribou. See the [CHANGELOG](CHANGELOG.md) (in Fre
 
 Part of **HOLM — Home Orchestration & Living Management**: smart management and orchestration of the home.
 
-Other projects: [Carburant HOLM](https://github.com/kaaribou/carburant-holm) · [Volets HOLM](https://github.com/kaaribou/volets-holm) · [HOLM HP/HC](https://github.com/kaaribou/holm-tarif) · [HOLM Lektrico](https://github.com/kaaribou/lektrico-holm) · [HOLM LaMetric](https://github.com/kaaribou/lametric-holm) · [HOLM My Menu](https://github.com/kaaribou/holm-mymenu) · [HOLM Cars](https://github.com/kaaribou/holm-cars) · [HOLM GitHub](https://github.com/kaaribou/github-holm) · [HOLM Navbar Card](https://github.com/kaaribou/holm-navbar-card) · [HOLM Climate Card](https://github.com/kaaribou/climate-card-holm) · [HOLM Music Card](https://github.com/kaaribou/holm-music-card) · [HOLM Energy Cards](https://github.com/kaaribou/holm-energy-cards) · [HOLM Power Flow Card](https://github.com/kaaribou/holm-power-flow-card) · [HOLM Ecojoko Card](https://github.com/kaaribou/holm-ecojoko-card) · [HOLM Runtime Card](https://github.com/kaaribou/holm-runtime-card) · [HOLM Covers Card](https://github.com/kaaribou/holm-covers-card) · [HOLM Floor Card](https://github.com/kaaribou/holm-floor-card) · [HOLM Radiator Card](https://github.com/kaaribou/holm-radiator-card) · [HOLM Security Card](https://github.com/kaaribou/holm-security-card) · [HOLM Sentinel Card](https://github.com/kaaribou/holm-sentinel-card) · [HOLM Recordings Card](https://github.com/kaaribou/holm-recordings-card) · [HOLM Smoke Card](https://github.com/kaaribou/holm-smoke-card) · [HOLM Family Card](https://github.com/kaaribou/holm-family-card) · [HOLM Govee Light Card](https://github.com/kaaribou/holm-govee-light-card) · [HOLM Leapmotor Card](https://github.com/kaaribou/holm-leapmotor-card).
+Other projects: [Volets HOLM](https://github.com/kaaribou/volets-holm) · [Carburant HOLM](https://github.com/kaaribou/carburant-holm) · [Commandes à la maison HOLM](https://github.com/kaaribou/commandes-holm) · [HOLM LaMetric](https://github.com/kaaribou/lametric-holm) · [HOLM My Menu](https://github.com/kaaribou/holm-mymenu) · [HOLM Lektrico](https://github.com/kaaribou/lektrico-holm) · [HOLM GitHub](https://github.com/kaaribou/github-holm) · [HOLM Cars](https://github.com/kaaribou/holm-cars) · [HOLM HP/HC](https://github.com/kaaribou/holm-tarif) · [HOLM Navbar Card](https://github.com/kaaribou/holm-navbar-card) · [HOLM Climate Card](https://github.com/kaaribou/climate-card-holm) · [HOLM Music Card](https://github.com/kaaribou/holm-music-card) · [HOLM Sentinel Card](https://github.com/kaaribou/holm-sentinel-card) · [HOLM Security Card](https://github.com/kaaribou/holm-security-card) · [HOLM Recordings Card](https://github.com/kaaribou/holm-recordings-card) · [HOLM Covers Card](https://github.com/kaaribou/holm-covers-card) · [HOLM Runtime Card](https://github.com/kaaribou/holm-runtime-card) · [HOLM Power Flow Card](https://github.com/kaaribou/holm-power-flow-card) · [HOLM Energy Cards](https://github.com/kaaribou/holm-energy-cards) · [HOLM Radiator Card](https://github.com/kaaribou/holm-radiator-card) · [HOLM Floor Card](https://github.com/kaaribou/holm-floor-card) · [HOLM Ecojoko Card](https://github.com/kaaribou/holm-ecojoko-card) · [HOLM Smoke Card](https://github.com/kaaribou/holm-smoke-card) · [HOLM Family Card](https://github.com/kaaribou/holm-family-card) · [HOLM Live Power Card](https://github.com/kaaribou/holm-live-power-card) · [HOLM Solar Optimizer Card](https://github.com/kaaribou/holm-solar-optimizer-card) · [HOLM Govee Light Card](https://github.com/kaaribou/holm-govee-light-card) · [HOLM Leapmotor Card](https://github.com/kaaribou/holm-leapmotor-card). · [HOLM Bins](https://github.com/kaaribou/holm-bins) · [HOLM FX](https://github.com/kaaribou/holm-fx-card) · [HOLM Theme Editor](https://github.com/kaaribou/holm-theme)

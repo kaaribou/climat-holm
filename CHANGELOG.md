@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+- **Préréglages Confort, Éco, Hors-gel et Absent** (#3) sur chaque pièce et sur son thermostat `climate.holm_<pièce>`, utilisables même quand l'appareil n'a pas de préréglage. Températures dans les réglages (chauffage : Confort, Éco, Hors-gel ; clim : Confort, Éco ; hors-gel et absence arrêtent la clim). Le préréglage remplace le planning jusqu'à ce qu'on l'annule. Nouvelle action `climat_holm.set_preset` (une pièce, plusieurs, ou toutes).
+- **Correction d'après la sonde : sécurité de sens** (#3). Tant que la pièce n'a pas atteint sa consigne, la consigne envoyée n'est plus baissée en chauffage ni montée en clim : une clim murale qui lit trop bas au démarrage chauffe à pleine puissance.
+- README : où trouver l'import Climate Scheduler après l'installation.
+- Tests automatiques des préréglages et de la correction.
+
 ## 1.3.0
 - **Consigne ajustée d'après la sonde** ([#2](https://github.com/kaaribou/climat-holm/issues/2)) : nouvelle option de pièce `sensor_regulate` (« Ajuster la consigne des appareils d'après la sonde »). Consigne envoyée = consigne + (température de l'appareil − température de la sonde), bornée à ±3 °C, arrondie au pas de l'appareil, changée au plus toutes les 10 minutes et seulement si elle varie d'au moins un pas. Inactive en mode Manuel, à l'arrêt, et si la sonde ou l'appareil n'a pas de température (consigne normale). Correction affichée sur la tuile et dans la pièce (attribut `sensor_adjust` de l'état de la pièce). Sans l'option, rien ne change.
 - **Programmation du jour** : graphique sous les pièces, consigne programmée de chaque pièce de 0 h à 24 h (profil actif), heure actuelle, bulle au survol, légende cliquable (clic : masquer / afficher, double-clic : seulement cette pièce), température réelle du jour en option. Replié par défaut ; options de carte `day_chart` (`collapsed`, `open`, `hide`) et `day_chart_real`. Choix mémorisés par le navigateur.

@@ -30,7 +30,12 @@
           "away_temp": "Temperatura en ausencia",
           "cool_away_off": "Apagar la climatización durante la ausencia",
           "manual_temp": "Temperatura del modo manual (por defecto)",
-          "window_delay": "Retardo antes de parar si una ventana está abierta"
+          "window_delay": "Retardo antes de parar si una ventana está abierta",
+          "comfort_temp": "Preajuste Confort (calefacción)",
+          "eco_temp": "Preajuste Eco (calefacción)",
+          "frost_temp": "Preajuste Antiheladas",
+          "cool_comfort_temp": "Preajuste Confort (refrigeración)",
+          "cool_eco_temp": "Preajuste Eco (refrigeración)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Estancia"
+        "name": "Estancia",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Programación",
+              "comfort": "Confort",
+              "eco": "Eco",
+              "frost": "Antiheladas",
+              "away": "Ausente",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Hasta",
           "description": "Fecha y hora de regreso (opcional)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Preajuste",
+      "description": "Aplica un preajuste (Confort, Eco, Antiheladas, Ausente) a una o varias estancias, o a todas si no se indica ninguna. «none» vuelve a la programación.",
+      "fields": {
+        "entity_id": {
+          "name": "Estancia",
+          "description": "Termostatos Climat HOLM de las estancias (vacío = todas)."
+        },
+        "room": {
+          "name": "Nombre de la estancia",
+          "description": "Alternativa a la entidad."
+        },
+        "preset": {
+          "name": "Preajuste",
+          "description": "comfort, eco, frost, away, o none para volver a la programación."
         }
       }
     }

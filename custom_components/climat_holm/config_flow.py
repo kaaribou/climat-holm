@@ -64,6 +64,11 @@ class ClimatHolmOptionsFlow(OptionsFlow):
             vol.Required("away_temp", default=s["away_temp"]): num(5, 25, 0.5, "°C"),
             vol.Required("cool_away_off", default=s["cool_away_off"]): BooleanSelector(),
             vol.Required("manual_temp", default=s["manual_temp"]): num(5, 30, 0.5, "°C"),
+            vol.Required("comfort_temp", default=s["comfort_temp"]): num(5, 30, 0.5, "°C"),
+            vol.Required("eco_temp", default=s["eco_temp"]): num(5, 30, 0.5, "°C"),
+            vol.Required("frost_temp", default=s["frost_temp"]): num(5, 15, 0.5, "°C"),
+            vol.Required("cool_comfort_temp", default=s["cool_comfort_temp"]): num(16, 32, 0.5, "°C"),
+            vol.Required("cool_eco_temp", default=s["cool_eco_temp"]): num(16, 32, 0.5, "°C"),
             vol.Required("window_delay", default=s["window_delay"]): num(0, 1800, 10, "s"),
         })
         return self.async_show_form(step_id="init", data_schema=schema)

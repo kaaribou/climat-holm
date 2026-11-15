@@ -30,7 +30,12 @@
           "away_temp": "Temperatura de ausência",
           "cool_away_off": "Desligar o ar condicionado durante a ausência",
           "manual_temp": "Temperatura do modo manual (padrão)",
-          "window_delay": "Atraso antes de parar se uma janela estiver aberta"
+          "window_delay": "Atraso antes de parar se uma janela estiver aberta",
+          "comfort_temp": "Predefinição Conforto (aquecimento)",
+          "eco_temp": "Predefinição Eco (aquecimento)",
+          "frost_temp": "Predefinição Antigelo",
+          "cool_comfort_temp": "Predefinição Conforto (arrefecimento)",
+          "cool_eco_temp": "Predefinição Eco (arrefecimento)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Divisão"
+        "name": "Divisão",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Programação",
+              "comfort": "Conforto",
+              "eco": "Eco",
+              "frost": "Antigelo",
+              "away": "Ausente",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Até",
           "description": "Data e hora de regresso (opcional)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Predefinição",
+      "description": "Aplica uma predefinição (Conforto, Eco, Antigelo, Ausente) a uma ou mais divisões, ou a todas se nenhuma for indicada. «none» volta à programação.",
+      "fields": {
+        "entity_id": {
+          "name": "Divisão",
+          "description": "Termóstatos Climat HOLM das divisões (vazio = todas)."
+        },
+        "room": {
+          "name": "Nome da divisão",
+          "description": "Alternativa à entidade."
+        },
+        "preset": {
+          "name": "Predefinição",
+          "description": "comfort, eco, frost, away, ou none para voltar à programação."
         }
       }
     }

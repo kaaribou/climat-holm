@@ -30,7 +30,12 @@
           "away_temp": "Temperatura in assenza",
           "cool_away_off": "Spegni il clima durante l'assenza",
           "manual_temp": "Temperatura della modalità manuale (predefinita)",
-          "window_delay": "Ritardo prima dello spegnimento se una finestra è aperta"
+          "window_delay": "Ritardo prima dello spegnimento se una finestra è aperta",
+          "comfort_temp": "Preimpostazione Comfort (riscaldamento)",
+          "eco_temp": "Preimpostazione Eco (riscaldamento)",
+          "frost_temp": "Preimpostazione Antigelo",
+          "cool_comfort_temp": "Preimpostazione Comfort (raffrescamento)",
+          "cool_eco_temp": "Preimpostazione Eco (raffrescamento)"
         }
       }
     }
@@ -38,7 +43,19 @@
   "entity": {
     "climate": {
       "room": {
-        "name": "Stanza"
+        "name": "Stanza",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "none": "Programmazione",
+              "comfort": "Comfort",
+              "eco": "Eco",
+              "frost": "Antigelo",
+              "away": "Assente",
+              "boost": "Boost"
+            }
+          }
+        }
       }
     },
     "select": {
@@ -129,6 +146,24 @@
         "until": {
           "name": "Fino al",
           "description": "Data e ora di rientro (facoltativo)."
+        }
+      }
+    },
+    "set_preset": {
+      "name": "Preimpostazione",
+      "description": "Applica una preimpostazione (Comfort, Eco, Antigelo, Assente) a una o più stanze, o a tutte se non se ne indica nessuna. «none» torna alla programmazione.",
+      "fields": {
+        "entity_id": {
+          "name": "Stanza",
+          "description": "Termostati Climat HOLM delle stanze (vuoto = tutte)."
+        },
+        "room": {
+          "name": "Nome della stanza",
+          "description": "Alternativa all'entità."
+        },
+        "preset": {
+          "name": "Preimpostazione",
+          "description": "comfort, eco, frost, away, o none per tornare alla programmazione."
         }
       }
     }
